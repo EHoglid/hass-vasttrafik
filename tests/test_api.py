@@ -18,6 +18,16 @@ sys.modules[SPEC.name] = API
 SPEC.loader.exec_module(API)
 
 
+def _run_async(coroutine):
+    """Run a coroutine without leaving pytest without a current loop."""
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(coroutine)
+    finally:
+        loop.close()
+        asyncio.set_event_loop(asyncio.new_event_loop())
+
+
 def test_parse_departures() -> None:
     """Parse the documented Journey Planner v4 departure shape."""
     departures = API.parse_departures(
@@ -107,7 +117,7 @@ def test_get_departures_follows_pagination() -> None:
         departures = await client.async_get_departures("example")
         return len(departures), calls
 
-    departure_count, calls = asyncio.run(run_test())
+    departure_count, calls = _run_async(run_test())
 
     assert departure_count == 2
     assert calls == [0, 1]
@@ -140,7 +150,7 @@ def test_get_departures_passes_configured_options() -> None:
         )
         return captured
 
-    params = asyncio.run(run_test())
+    params = _run_async(run_test())
 
     assert params == {
         "timeSpanInMinutes": 90,
