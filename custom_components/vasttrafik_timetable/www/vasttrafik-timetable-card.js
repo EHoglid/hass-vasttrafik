@@ -163,7 +163,7 @@ class VasttrafikTimetableCard extends HTMLElement {
         const entity = entityId && this._hass.states[entityId];
         const departures = entity?.attributes?.departures || [];
         const sizeAliases = { small: "s", medium: "m", large: "l" };
-        const requestedSize = this._config?.size || "m";
+        const requestedSize = this._config?.size || "xs";
         const cardSize = sizeAliases[requestedSize] || (
             ["xs", "s", "m", "l", "xl"].includes(requestedSize)
                 ? requestedSize
@@ -381,9 +381,9 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             </select></label>
             <label>${labels.seconds}<input id="page_seconds" type="number" min="1" max="60" value="${this._config?.page_seconds || 5}"></label>
             <label>${labels.size}<select id="size">
-                <option value="xs" ${this._config?.size === "xs" ? "selected" : ""}>XS (0.75 row)</option>
-                <option value="s" ${!this._config?.size || this._config?.size === "s" ? "selected" : ""}>S (1 row)</option>
-                <option value="m" ${!this._config?.size || ["m", "medium"].includes(this._config?.size) ? "selected" : ""}>M (1.25 rows)</option>
+                <option value="xs" ${!this._config?.size || this._config?.size === "xs" ? "selected" : ""}>XS (0.75 row)</option>
+                <option value="s" ${this._config?.size === "s" ? "selected" : ""}>S (1 row)</option>
+                <option value="m" ${["m", "medium"].includes(this._config?.size) ? "selected" : ""}>M (1.25 rows)</option>
                 <option value="l" ${this._config?.size === "l" ? "selected" : ""}>L (1.5 rows)</option>
                 <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (2 rows)</option>
             </select></label>

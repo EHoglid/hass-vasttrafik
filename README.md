@@ -12,6 +12,20 @@ minute.
 
 ## Install
 
+### HACS custom repository
+
+Until the integration is included in the default HACS catalogue, add it as a
+custom repository:
+
+1. Open **HACS** in Home Assistant.
+2. Open **Integrations** and select the three-dot menu.
+3. Choose **Custom repositories**.
+4. Enter `EHoglid/hass-vasttrafik`.
+5. Select **Integration** as the repository type and click **Add**.
+6. Search for **Västtrafik**, download it, and restart Home Assistant.
+
+### Manual installation
+
 1. Copy `custom_components/vasttrafik_timetable` into the
    `custom_components` directory in your Home Assistant configuration.
 2. Restart Home Assistant.
@@ -67,7 +81,7 @@ Add a Manual card with:
 type: custom:vasttrafik-timetable-card
 entity: sensor.lindholmspiren_goteborg_next_departure
 title: Lindholmen
-size: m
+size: xs
 lines: "10, 12, 19, 21, X1"
 show_departure_after: true
 page_seconds: 5
