@@ -416,6 +416,7 @@ window.customCards = window.customCards || [];
 window.customCards.push({
     type: "vasttrafik-timetable-card",
     name: "Västtrafik departure board",
-    description: "Västtrafik departure board.",
+    description: "Västtrafik avgångstavla / colored departure board.",
+    documentationURL: "https://ehoglid.github.io/hass-vasttrafik/",
     preview: true,
 });
