@@ -1,6 +1,6 @@
 {
   "domain": "vasttrafik_timetable",
-  "name": "Västtrafik Timetable",
+  "name": "Västtrafik",
   "codeowners": [],
   "after_dependencies": ["frontend"],
   "config_flow": true,

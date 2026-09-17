@@ -415,6 +415,7 @@ if (!customElements.get("vasttrafik-timetable-card-editor")) {
 window.customCards = window.customCards || [];
 window.customCards.push({
     type: "vasttrafik-timetable-card",
-    name: "Västtrafik Timetable",
-    description: "A colored Västtrafik departure board.",
+    name: "Västtrafik departure board",
+    description: "Västtrafik departure board.",
+    preview: true,
 });

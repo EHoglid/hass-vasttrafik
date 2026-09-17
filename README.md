@@ -1,4 +1,4 @@
-# Västtrafik Timetable for Home Assistant
+# Västtrafik for Home Assistant
 
 [![CI](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml)
@@ -16,13 +16,13 @@ minute.
    `custom_components` directory in your Home Assistant configuration.
 2. Restart Home Assistant.
 3. Open **Settings > Devices & services > Add integration** and search for
-   **Västtrafik Timetable**.
+  **Västtrafik**.
 
 ## Configuration
 
 1. Create an account at <https://developer.vasttrafik.se/>.
 2. Create an application and subscribe it to **Planera Resa v4**.
-3. Add **Västtrafik Timetable** in Home Assistant and enter the application's
+3. Add **Västtrafik** in Home Assistant and enter the application's
   Client ID and Client Secret the first time.
 4. Search for a stop, select a result, and configure its departure query.
 
@@ -55,11 +55,11 @@ Each stop creates:
 
 ## Dashboard card
 
-The integration includes a colored **Västtrafik Timetable** Lovelace card. The
+The integration includes a colored **Västtrafik departure board** Lovelace card. The
 integration registers its JavaScript resource automatically. After restarting
-Home Assistant, add it from **Edit dashboard > Add card**. If an old manual
-resource exists under **Settings > Dashboards > Resources**, remove it first so
-the card is not loaded twice.
+Home Assistant, add it from **Edit dashboard > Add card**. Remove any manually
+added Västtrafik card resource under **Settings > Dashboards > Resources**;
+the integration registers its resource automatically.
 
 Add a Manual card with:
 
