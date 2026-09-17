@@ -10,6 +10,9 @@ departures from selected Västtrafik stop areas. It uses Journey Planner API v4,
 fetches the configured time window with pagination, and refreshes once per
 minute.
 
+The Västtrafik name and logo are trademarks of Västtrafik and are used only to
+identify the service. They are not covered by this repository's MIT license.
+
 ## Install
 
 ### HACS custom repository
