@@ -1,5 +1,11 @@
 # Västtrafik Timetable for Home Assistant
 
+[![CI](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml)
+[![GitHub Pages](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Project page:** [ehoglid.github.io/hass-vasttrafik](https://ehoglid.github.io/hass-vasttrafik/)
+
 A custom Home Assistant integration that shows live bus, tram, train, and ferry
 departures from selected Västtrafik stop areas. It uses Journey Planner API v4,
 fetches the configured time window with pagination, and refreshes once per
