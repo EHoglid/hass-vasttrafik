@@ -1,0 +1,68 @@
+{
+  "title": "Västtrafik Tidtabell",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Anslut till Västtrafik",
+        "description": "Skapa en applikation med åtkomst till Planera Resa API v4 på developer.vasttrafik.se.",
+        "data": {
+          "client_id": "Klient-ID",
+          "client_secret": "Klienthemlighet"
+        }
+      },
+      "search": {
+        "title": "Hitta en hållplats",
+        "description": "Sök med hållplatsens namn, till exempel Brunnsparken.",
+        "data": {
+          "query": "Hållplatsnamn"
+        }
+      },
+      "select": {
+        "title": "Välj en hållplats",
+        "data": {
+          "stop_gid": "Hållplats"
+        }
+      },
+      "options": {
+        "title": "Avgångsinställningar",
+        "description": "Anpassa avgångssökningen för den här hållplatsen.",
+        "data": {
+          "start_date_time": "Startdatum och tid (RFC 3339, valfritt)",
+          "platforms": "Plattformar (kommaseparerade, valfritt)",
+          "time_span_in_minutes": "Tidsintervall i minuter",
+          "max_departures_per_line_and_direction": "Maximalt antal avgångar per linje och riktning",
+          "api_limit": "Resultat per API-sida",
+          "include_occupancy": "Inkludera beläggningsdata",
+          "direction_gid": "Riktningens hållplatsområdes-GID (valfritt)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Återanslut till Västtrafik",
+        "description": "Ange uppdaterade API-uppgifter.",
+        "data": {
+          "client_id": "Klient-ID",
+          "client_secret": "Klienthemlighet"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kunde inte ansluta till Västtrafik.",
+      "invalid_auth": "API-uppgifterna är ogiltiga.",
+      "no_stops": "Inga hållplatser hittades. Försök med en kortare sökning."
+    },
+    "abort": {
+      "already_configured": "Hållplatsen är redan konfigurerad.",
+      "reauth_successful": "Västtrafik har återanslutits."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next_departure": {
+        "name": "Nästa avgång"
+      },
+      "minutes_until_departure": {
+        "name": "Minuter till avgång"
+      }
+    }
+  }
+}

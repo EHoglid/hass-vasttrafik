@@ -1,0 +1,68 @@
+{
+  "title": "Västtrafik Timetable",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Västtrafik",
+        "description": "Create an application with access to Journey Planner API v4 at developer.vasttrafik.se.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client secret"
+        }
+      },
+      "search": {
+        "title": "Find a stop",
+        "description": "Search by stop name, for example Brunnsparken.",
+        "data": {
+          "query": "Stop name"
+        }
+      },
+      "select": {
+        "title": "Select a stop",
+        "data": {
+          "stop_gid": "Stop"
+        }
+      },
+      "options": {
+        "title": "Departure settings",
+        "description": "Customize the one-hour departure query for this stop.",
+        "data": {
+          "start_date_time": "Start date and time (RFC 3339, optional)",
+          "platforms": "Platforms (comma-separated, optional)",
+          "time_span_in_minutes": "Time span in minutes",
+          "max_departures_per_line_and_direction": "Maximum departures per line and direction",
+          "api_limit": "Results per API page",
+          "include_occupancy": "Include occupancy data",
+          "direction_gid": "Direction stop-area GID (optional)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect to Västtrafik",
+        "description": "Enter updated API credentials.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client secret"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to Västtrafik.",
+      "invalid_auth": "The API credentials are invalid.",
+      "no_stops": "No stops were found. Try a shorter search."
+    },
+    "abort": {
+      "already_configured": "This stop is already configured.",
+      "reauth_successful": "Västtrafik was reconnected successfully."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next_departure": {
+        "name": "Next departure"
+      },
+      "minutes_until_departure": {
+        "name": "Minutes until departure"
+      }
+    }
+  }
+}

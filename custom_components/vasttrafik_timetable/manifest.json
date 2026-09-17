@@ -1,0 +1,12 @@
+{
+  "domain": "vasttrafik_timetable",
+  "name": "Västtrafik Timetable",
+  "codeowners": [],
+  "after_dependencies": ["frontend"],
+  "config_flow": true,
+  "documentation": "https://developer.vasttrafik.se/",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}
