@@ -1,94 +1,275 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Västtrafik Timetable for Home Assistant. Live departures for buses, trams, trains, and ferries.">
-  <title>Västtrafik Timetable for Home Assistant</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="site-header">
-    <nav class="nav shell" aria-label="Main navigation">
-      <a class="brand" href="#top"><span class="brand-mark">V</span><span>Västtrafik Timetable</span></a>
-      <div class="nav-links">
-        <a href="#install">Install</a>
-        <a href="#card">Dashboard card</a>
-        <a class="nav-cta" href="https://github.com/EHoglid/hass-vasttrafik">View on GitHub</a>
-      </div>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero shell">
-      <div class="hero-copy">
-        <p class="eyebrow">Home Assistant custom integration</p>
-        <h1>Departures that feel like a real departure board.</h1>
-        <p class="hero-text">Live Västtrafik departures for buses, trams, trains, and ferries, with line colors, transport icons, platform information, and a purpose-built Lovelace card.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#install">Install the integration</a>
-          <a class="button secondary" href="https://github.com/EHoglid/hass-vasttrafik">Read the source</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Västtrafik Timetable for Home Assistant. Live departures for buses, trams, trains, and ferries."
+    />
+    <title>Västtrafik Timetable for Home Assistant</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Main navigation">
+        <a class="brand" href="#top"
+          ><span class="brand-mark">V</span><span>Västtrafik Timetable</span></a
+        >
+        <div class="nav-links">
+          <a href="#install">Install</a>
+          <a href="#card">Dashboard card</a>
+          <a class="nav-cta" href="https://github.com/EHoglid/hass-vasttrafik"
+            >View on GitHub</a
+          >
         </div>
-        <div class="trust-row"><span>Journey Planner API v4</span><span>HACS compatible</span><span>Open source</span></div>
-      </div>
-      <div class="board-preview" aria-label="Example departure board">
-        <div class="board-top"><span>Lindholmen</span><time>14:32</time></div>
-        <div class="board-head"><span></span><span>Line</span><span>Destination</span><span>Next</span><span>Platform</span></div>
-        <div class="board-row"><span class="mode bus">BUS</span><b class="line yellow">19</b><strong>Bäckebol <small>via Backa</small></strong><b>3 <small>min</small></b><i>C</i></div>
-        <div class="board-row"><span class="mode tram">TRAM</span><b class="line aqua">12</b><strong>Mölndal</strong><b>7 <small>min</small></b><i>A</i></div>
-        <div class="board-row"><span class="mode tram">TRAM</span><b class="line green">10</b><strong>Guldheden</strong><b>12 <small>min</small></b><i>A</i></div>
-        <div class="board-row"><span class="mode bus">BUS</span><b class="line magenta">X1</b><strong>Partille centrum</strong><b>16 <small>min</small></b><i>D</i></div>
-        <div class="board-footer"><span class="active-page"></span><span class="page-dot"></span><span class="page-dot"></span><span class="page-dot"></span></div>
-      </div>
-    </section>
+      </nav>
+    </header>
 
-    <section class="feature-band">
-      <div class="shell feature-grid">
-        <article><span class="feature-number">01</span><h2>One integration</h2><p>Configure your Västtrafik credentials once. Additional stop areas reuse them automatically.</p></article>
-        <article><span class="feature-number">02</span><h2>One board</h2><p>Group routes by line and destination, then rotate through every departure page automatically.</p></article>
-        <article><span class="feature-number">03</span><h2>One minute fresh</h2><p>Polling keeps your board current while preserving the API’s live colors and realtime estimates.</p></article>
-      </div>
-    </section>
+    <main id="top">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow">Home Assistant custom integration</p>
+          <h1>Departures that feel like a real departure board.</h1>
+          <p class="hero-text">
+            Live Västtrafik departures for buses, trams, trains, and ferries,
+            with line colors, transport icons, platform information, and a
+            purpose-built Lovelace card.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#install"
+              >Install the integration</a
+            >
+            <a
+              class="button secondary"
+              href="https://github.com/EHoglid/hass-vasttrafik"
+              >Read the source</a
+            >
+          </div>
+          <div class="trust-row">
+            <span>Journey Planner API v4</span><span>HACS compatible</span
+            ><span>Open source</span>
+          </div>
+        </div>
+        <div class="board-preview" aria-label="Example departure board">
+          <div class="board-top"><span>Lindholmen</span><time>14:32</time></div>
+          <div class="board-head">
+            <span></span><span>Line</span><span>Destination</span
+            ><span>Next</span><span>Platform</span>
+          </div>
+          <div class="board-row">
+            <span class="mode bus">BUS</span><b class="line yellow">19</b
+            ><strong>Bäckebol <small>via Backa</small></strong
+            ><b>3 <small>min</small></b
+            ><i>C</i>
+          </div>
+          <div class="board-row">
+            <span class="mode tram">TRAM</span><b class="line aqua">12</b
+            ><strong>Mölndal</strong><b>7 <small>min</small></b
+            ><i>A</i>
+          </div>
+          <div class="board-row">
+            <span class="mode tram">TRAM</span><b class="line green">10</b
+            ><strong>Guldheden</strong><b>12 <small>min</small></b
+            ><i>A</i>
+          </div>
+          <div class="board-row">
+            <span class="mode bus">BUS</span><b class="line magenta">X1</b
+            ><strong>Partille centrum</strong><b>16 <small>min</small></b
+            ><i>D</i>
+          </div>
+          <div class="board-footer">
+            <span class="active-page"></span><span class="page-dot"></span
+            ><span class="page-dot"></span><span class="page-dot"></span>
+          </div>
+        </div>
+      </section>
 
-    <section id="install" class="content-section shell">
-      <div class="section-intro"><p class="eyebrow">Get started</p><h2>Install in a few minutes</h2><p>Install through HACS for updates, or copy the integration manually into your Home Assistant configuration.</p></div>
-      <div class="steps">
-        <article class="step"><span>01</span><div><h3>Install</h3><p>In HACS, open <strong>Integrations</strong>, search for <strong>Västtrafik Timetable</strong>, and download it. You can also copy <code>custom_components/vasttrafik_timetable</code> into your Home Assistant <code>config/custom_components</code> directory.</p></div></article>
-        <article class="step"><span>02</span><div><h3>Create API credentials</h3><p>Create an application at <a href="https://developer.vasttrafik.se/">developer.vasttrafik.se</a> and subscribe it to <strong>Planera Resa v4</strong>. Keep the Client ID and Client Secret available for the first setup.</p></div></article>
-        <article class="step"><span>03</span><div><h3>Add your first stop</h3><p>Restart Home Assistant, open <strong>Settings → Devices & services → Add integration</strong>, and select <strong>Västtrafik Timetable</strong>. Search for a stop, select it, and save the departure settings.</p></div></article>
-        <article class="step"><span>04</span><div><h3>Add more stops</h3><p>When adding another stop, the integration reuses the credentials from your existing Västtrafik entry. You only need to search and select the new stop.</p></div></article>
-      </div>
-    </section>
+      <section class="feature-band">
+        <div class="shell feature-grid">
+          <article>
+            <span class="feature-number">01</span>
+            <h2>One integration</h2>
+            <p>
+              Configure your Västtrafik credentials once. Additional stop areas
+              reuse them automatically.
+            </p>
+          </article>
+          <article>
+            <span class="feature-number">02</span>
+            <h2>One board</h2>
+            <p>
+              Group routes by line and destination, then rotate through every
+              departure page automatically.
+            </p>
+          </article>
+          <article>
+            <span class="feature-number">03</span>
+            <h2>One minute fresh</h2>
+            <p>
+              Polling keeps your board current while preserving the API’s live
+              colors and realtime estimates.
+            </p>
+          </article>
+        </div>
+      </section>
 
-    <section id="card" class="dark-section">
-      <div class="shell card-section">
-        <div class="section-intro light"><p class="eyebrow">The Lovelace experience</p><h2>A board built for the wall.</h2><p>The bundled card follows Home Assistant’s layout height, fills each page with rows that fit, and rotates through additional pages without manual templates.</p></div>
-        <div class="config-layout">
-          <div class="code-window"><div class="window-bar"><span></span><span></span><span></span><em>dashboard.yaml</em></div><pre><code>type: custom:vasttrafik-timetable-card
+      <section id="install" class="content-section shell">
+        <div class="section-intro">
+          <p class="eyebrow">Get started</p>
+          <h2>Install in a few minutes</h2>
+          <p>
+            Install through HACS for updates, or copy the integration manually
+            into your Home Assistant configuration.
+          </p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <span>01</span>
+            <div>
+              <h3>Install</h3>
+              <p>
+                In HACS, open <strong>Integrations</strong>, search for
+                <strong>Västtrafik Timetable</strong>, and download it. You can
+                also copy
+                <code>custom_components/vasttrafik_timetable</code> into your
+                Home Assistant <code>config/custom_components</code> directory.
+              </p>
+            </div>
+          </article>
+          <article class="step">
+            <span>02</span>
+            <div>
+              <h3>Create API credentials</h3>
+              <p>
+                Create an application at
+                <a href="https://developer.vasttrafik.se/"
+                  >developer.vasttrafik.se</a
+                >
+                and subscribe it to <strong>Planera Resa v4</strong>. Keep the
+                Client ID and Client Secret available for the first setup.
+              </p>
+            </div>
+          </article>
+          <article class="step">
+            <span>03</span>
+            <div>
+              <h3>Add your first stop</h3>
+              <p>
+                Restart Home Assistant, open
+                <strong>Settings → Devices & services → Add integration</strong
+                >, and select <strong>Västtrafik Timetable</strong>. Search for
+                a stop, select it, and save the departure settings.
+              </p>
+            </div>
+          </article>
+          <article class="step">
+            <span>04</span>
+            <div>
+              <h3>Add more stops</h3>
+              <p>
+                When adding another stop, the integration reuses the credentials
+                from your existing Västtrafik entry. You only need to search and
+                select the new stop.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="card" class="dark-section">
+        <div class="shell card-section">
+          <div class="section-intro light">
+            <p class="eyebrow">The Lovelace experience</p>
+            <h2>A board built for the wall.</h2>
+            <p>
+              The bundled card follows Home Assistant’s layout height, fills
+              each page with rows that fit, and rotates through additional pages
+              without manual templates.
+            </p>
+          </div>
+          <div class="config-layout">
+            <div class="code-window">
+              <div class="window-bar">
+                <span></span><span></span><span></span><em>dashboard.yaml</em>
+              </div>
+              <pre><code>type: custom:vasttrafik-timetable-card
 entity: sensor.lindholmen_next_departure
 title: Lindholmen
 size: m
 show_departure_after: true
 lines: "10, 12, 19, 21, X1"
-page_seconds: 5</code></pre></div>
-          <div class="settings-list">
-            <div><b>xs / s / m / l / xl</b><span>Density presets from 0.75 to 2 Home Assistant grid rows.</span></div>
-            <div><b>Show departure after</b><span>Keep or hide the Then/Därefter column.</span></div>
-            <div><b>Line filters</b><span>Show only selected line numbers or names.</span></div>
-            <div><b>Automatic paging</b><span>Progress pill and page indicators, with a configurable interval.</span></div>
+page_seconds: 5</code></pre>
+            </div>
+            <div class="settings-list">
+              <div>
+                <b>xs / s / m / l / xl</b
+                ><span
+                  >Density presets from 0.75 to 2 Home Assistant grid
+                  rows.</span
+                >
+              </div>
+              <div>
+                <b>Show departure after</b
+                ><span>Keep or hide the Then/Därefter column.</span>
+              </div>
+              <div>
+                <b>Line filters</b
+                ><span>Show only selected line numbers or names.</span>
+              </div>
+              <div>
+                <b>Automatic paging</b
+                ><span
+                  >Progress pill and page indicators, with a configurable
+                  interval.</span
+                >
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section class="content-section shell split-section">
+        <div class="section-intro">
+          <p class="eyebrow">Configuration</p>
+          <h2>Useful by default, adjustable when needed.</h2>
+        </div>
+        <div class="api-options">
+          <p>Each stop can configure:</p>
+          <ul>
+            <li>Time span from 0 to 1440 minutes</li>
+            <li>Platforms and direction stop-area GID</li>
+            <li>Maximum departures per line and direction</li>
+            <li>API page size and optional occupancy data</li>
+            <li>Optional RFC 3339 start date and time</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="content-section shell install-note">
+        <div>
+          <p class="eyebrow">Developers</p>
+          <h2>Built with tests and CI.</h2>
+          <p>
+            Run the API tests and Ruff locally. GitHub Actions runs the full
+            Home Assistant test setup on Ubuntu.
+          </p>
+        </div>
+        <a
+          class="button secondary"
+          href="https://github.com/EHoglid/hass-vasttrafik#development"
+          >Development guide</a
+        >
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer-inner">
+        <span>Västtrafik Timetable</span><span>Made for Home Assistant</span
+        ><a href="https://github.com/EHoglid/hass-vasttrafik"
+          >EHoglid/hass-vasttrafik</a
+        >
       </div>
-    </section>
-
-    <section class="content-section shell split-section">
-      <div class="section-intro"><p class="eyebrow">Configuration</p><h2>Useful by default, adjustable when needed.</h2></div>
-      <div class="api-options"><p>Each stop can configure:</p><ul><li>Time span from 0 to 1440 minutes</li><li>Platforms and direction stop-area GID</li><li>Maximum departures per line and direction</li><li>API page size and optional occupancy data</li><li>Optional RFC 3339 start date and time</li></ul></div>
-    </section>
-
-    <section class="content-section shell install-note"><div><p class="eyebrow">Developers</p><h2>Built with tests and CI.</h2><p>Run the API tests and Ruff locally. GitHub Actions runs the full Home Assistant test setup on Ubuntu.</p></div><a class="button secondary" href="https://github.com/EHoglid/hass-vasttrafik#development">Development guide</a></section>
-  </main>
-
-  <footer class="footer"><div class="shell footer-inner"><span>Västtrafik Timetable</span><span>Made for Home Assistant</span><a href="https://github.com/EHoglid/hass-vasttrafik">EHoglid/hass-vasttrafik</a></div></footer>
-</body>
+    </footer>
+  </body>
 </html>
