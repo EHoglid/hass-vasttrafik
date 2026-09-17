@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml)
+[![Project page](https://img.shields.io/badge/Project_page-GitHub_Pages-006b76)](https://ehoglid.github.io/hass-vasttrafik/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Project page:** [ehoglid.github.io/hass-vasttrafik](https://ehoglid.github.io/hass-vasttrafik/)
