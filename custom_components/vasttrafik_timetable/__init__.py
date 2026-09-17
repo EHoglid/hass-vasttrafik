@@ -43,9 +43,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     return True
 
 
-async def async_setup_entry(
-    hass: HomeAssistant, entry: VasttrafikConfigEntry
-) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: VasttrafikConfigEntry) -> bool:
     """Set up Västtrafik Timetable from a config entry."""
     await _async_register_frontend_card(hass)
     client = VasttrafikClient(
@@ -60,8 +58,6 @@ async def async_setup_entry(
     return True
 
 
-async def async_unload_entry(
-    hass: HomeAssistant, entry: VasttrafikConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: VasttrafikConfigEntry) -> bool:
     """Unload a Västtrafik Timetable config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

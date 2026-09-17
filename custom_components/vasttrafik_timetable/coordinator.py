@@ -48,15 +48,9 @@ class VasttrafikCoordinator(DataUpdateCoordinator[list[Departure]]):
                 self._stop_gid, self.config_entry.data
             )
         except VasttrafikAuthenticationError as err:
-            raise ConfigEntryAuthFailed(
-                "Västtrafik credentials were rejected"
-            ) from err
+            raise ConfigEntryAuthFailed("Västtrafik credentials were rejected") from err
         except VasttrafikApiError as err:
-            raise UpdateFailed(
-                f"Error communicating with Västtrafik: {err}"
-            ) from err
+            raise UpdateFailed(f"Error communicating with Västtrafik: {err}") from err
 
-        sorted_departures = sorted(
-            departures, key=lambda item: item.estimated_time
-        )
+        sorted_departures = sorted(departures, key=lambda item: item.estimated_time)
         return sorted_departures

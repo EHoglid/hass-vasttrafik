@@ -91,9 +91,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if existing_entries:
                 self._credentials = {
                     CONF_CLIENT_ID: existing_entries[0].data[CONF_CLIENT_ID],
-                    CONF_CLIENT_SECRET: existing_entries[0].data[
-                        CONF_CLIENT_SECRET
-                    ],
+                    CONF_CLIENT_SECRET: existing_entries[0].data[CONF_CLIENT_SECRET],
                 }
                 self._api = None
                 try:
@@ -136,9 +134,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                stops = await self._client().async_search_stops(
-                    user_input["query"]
-                )
+                stops = await self._client().async_search_stops(user_input["query"])
             except VasttrafikAuthenticationError:
                 return await self.async_step_user()
             except VasttrafikApiError:
@@ -151,9 +147,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="search",
-            data_schema=vol.Schema(
-                {vol.Required("query"): self._validate_query}
-            ),
+            data_schema=vol.Schema({vol.Required("query"): self._validate_query}),
             errors=errors,
         )
 
@@ -204,29 +198,29 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="options",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_START_DATE_TIME, default=""):
-                    self._validate_datetime,
+                    vol.Optional(
+                        CONF_START_DATE_TIME, default=""
+                    ): self._validate_datetime,
                     vol.Optional(CONF_PLATFORMS, default=""): str,
-                    vol.Required(
-                        CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN
-                    ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1440)),
+                    vol.Required(CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN): vol.All(
+                        vol.Coerce(int), vol.Range(min=0, max=1440)
+                    ),
                     vol.Required(
                         CONF_MAX_DEPARTURES_PER_LINE,
                         default=DEFAULT_MAX_DEPARTURES_PER_LINE,
                     ): vol.All(vol.Coerce(int), vol.Range(min=1, max=20)),
-                    vol.Required(
-                        CONF_API_LIMIT, default=DEFAULT_API_LIMIT
-                    ): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
+                    vol.Required(CONF_API_LIMIT, default=DEFAULT_API_LIMIT): vol.All(
+                        vol.Coerce(int), vol.Range(min=1, max=100)
+                    ),
                     vol.Optional(CONF_INCLUDE_OCCUPANCY, default=False): bool,
-                    vol.Optional(CONF_DIRECTION_GID, default=""):
-                    self._validate_stop_gid,
+                    vol.Optional(
+                        CONF_DIRECTION_GID, default=""
+                    ): self._validate_stop_gid,
                 }
             ),
         )
 
-    async def async_step_reauth(
-        self, entry_data: dict[str, Any]
-    ) -> FlowResult:
+    async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
         """Start reauthentication."""
         return await self.async_step_reauth_confirm()
 

@@ -6,10 +6,7 @@ import sys
 from pathlib import Path
 
 API_PATH = (
-    Path(__file__).parents[1]
-    / "custom_components"
-    / "vasttrafik_timetable"
-    / "api.py"
+    Path(__file__).parents[1] / "custom_components" / "vasttrafik_timetable" / "api.py"
 )
 SPEC = importlib.util.spec_from_file_location("vasttrafik_api", API_PATH)
 assert SPEC is not None and SPEC.loader is not None
@@ -89,13 +86,12 @@ def test_parse_departures_skips_invalid_timestamps() -> None:
 
 def test_get_departures_follows_pagination() -> None:
     """Fetch every page returned for the one-hour departure window."""
+
     async def run_test() -> tuple[int, list[int]]:
         client = API.VasttrafikClient(None, "", "")
         calls: list[int] = []
 
-        async def fake_get(
-            path: str, params: dict[str, str | int | bool]
-        ) -> dict:
+        async def fake_get(path: str, params: dict[str, str | int | bool]) -> dict:
             calls.append(int(params["offset"]))
             departure = {
                 "serviceJourney": {
@@ -125,13 +121,12 @@ def test_get_departures_follows_pagination() -> None:
 
 def test_get_departures_passes_configured_options() -> None:
     """Translate stored config values into the documented API parameters."""
+
     async def run_test() -> dict[str, str | int | bool]:
         client = API.VasttrafikClient(None, "", "")
         captured: dict[str, str | int | bool] = {}
 
-        async def fake_get(
-            path: str, params: dict[str, str | int | bool]
-        ) -> dict:
+        async def fake_get(path: str, params: dict[str, str | int | bool]) -> dict:
             captured.update(params)
             return {"results": []}
 
