@@ -408,6 +408,9 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
 if (!customElements.get("vasttrafik-timetable-card")) {
     customElements.define("vasttrafik-timetable-card", VasttrafikTimetableCard);
 }
+if (!customElements.get("vasttrafik-timetale-card")) {
+    customElements.define("vasttrafik-timetale-card", VasttrafikTimetableCard);
+}
 if (!customElements.get("vasttrafik-timetable-card-editor")) {
     customElements.define("vasttrafik-timetable-card-editor", VasttrafikTimetableCardEditor);
 }

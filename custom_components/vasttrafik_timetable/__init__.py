@@ -23,7 +23,7 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
         return
 
     card_path = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
-    card_url = f"{card_path}?v=3"
+    card_url = f"{card_path}?v=4"
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
