@@ -5,8 +5,7 @@ addopts = "-ra"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501"]
 
 [tool.ruff]
-line-length = 88
+line-length = 79
 target-version = "py313"

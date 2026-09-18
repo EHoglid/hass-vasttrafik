@@ -1,4 +1,4 @@
-"""Config flow for Västtrafik Timetable."""
+"""Config flow for Västtrafik Journey Planner."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import (
@@ -36,7 +36,7 @@ from .const import (
 
 
 class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle the Västtrafik Timetable config flow."""
+    """Handle the Västtrafik Journey Planner config flow."""
 
     VERSION = 1
 
@@ -83,23 +83,28 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Validate Västtrafik API credentials."""
         errors: dict[str, str] = {}
         if user_input is None and not self._credentials:
             existing_entries = self.hass.config_entries.async_entries(DOMAIN)
             if existing_entries:
-                self._credentials = {
-                    CONF_CLIENT_ID: existing_entries[0].data[CONF_CLIENT_ID],
-                    CONF_CLIENT_SECRET: existing_entries[0].data[CONF_CLIENT_SECRET],
-                }
+                existing_data = existing_entries[0].data
+                client_id = existing_data.get(CONF_CLIENT_ID)
+                client_secret = existing_data.get(CONF_CLIENT_SECRET)
+                if client_id and client_secret:
+                    self._credentials = {
+                        CONF_CLIENT_ID: str(client_id),
+                        CONF_CLIENT_SECRET: str(client_secret),
+                    }
                 self._api = None
-                try:
-                    await self._client().async_authenticate()
-                except (VasttrafikAuthenticationError, VasttrafikApiError):
-                    self._credentials = {}
-                else:
-                    return await self.async_step_search()
+                if self._credentials:
+                    try:
+                        await self._client().async_authenticate()
+                    except (VasttrafikAuthenticationError, VasttrafikApiError):
+                        self._credentials = {}
+                    else:
+                        return await self.async_step_search()
 
         if user_input is not None:
             self._credentials = {
@@ -129,12 +134,14 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_search(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Search for a stop area."""
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                stops = await self._client().async_search_stops(user_input["query"])
+                stops = await self._client().async_search_stops(
+                    user_input["query"]
+                )
             except VasttrafikAuthenticationError:
                 return await self.async_step_user()
             except VasttrafikApiError:
@@ -147,13 +154,15 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="search",
-            data_schema=vol.Schema({vol.Required("query"): self._validate_query}),
+            data_schema=vol.Schema(
+                {vol.Required("query"): self._validate_query}
+            ),
             errors=errors,
         )
 
     async def async_step_select(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Select a stop from the search results."""
         if user_input is not None:
             stop = self._stops[user_input[CONF_STOP_GID]]
@@ -164,7 +173,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self._show_stop_selection()
 
-    async def _show_stop_selection(self) -> FlowResult:
+    async def _show_stop_selection(self) -> ConfigFlowResult:
         """Show the current stop search results."""
         return self.async_show_form(
             step_id="select",
@@ -179,7 +188,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_options(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Configure the departure query for this stop."""
         if self._selected_stop is None:
             return await self.async_step_search()
@@ -202,16 +211,16 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_START_DATE_TIME, default=""
                     ): self._validate_datetime,
                     vol.Optional(CONF_PLATFORMS, default=""): str,
-                    vol.Required(CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN): vol.All(
-                        vol.Coerce(int), vol.Range(min=0, max=1440)
-                    ),
+                    vol.Required(
+                        CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN
+                    ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1440)),
                     vol.Required(
                         CONF_MAX_DEPARTURES_PER_LINE,
                         default=DEFAULT_MAX_DEPARTURES_PER_LINE,
                     ): vol.All(vol.Coerce(int), vol.Range(min=1, max=20)),
-                    vol.Required(CONF_API_LIMIT, default=DEFAULT_API_LIMIT): vol.All(
-                        vol.Coerce(int), vol.Range(min=1, max=100)
-                    ),
+                    vol.Required(
+                        CONF_API_LIMIT, default=DEFAULT_API_LIMIT
+                    ): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
                     vol.Optional(CONF_INCLUDE_OCCUPANCY, default=False): bool,
                     vol.Optional(
                         CONF_DIRECTION_GID, default=""
@@ -220,13 +229,15 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             ),
         )
 
-    async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> ConfigFlowResult:
         """Start reauthentication."""
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Validate replacement credentials."""
         errors: dict[str, str] = {}
         if user_input is not None:

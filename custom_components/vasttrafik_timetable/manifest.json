@@ -1,6 +1,6 @@
 {
   "domain": "vasttrafik_timetable",
-  "name": "Västtrafik",
+  "name": "Västtrafik Journey Planner",
   "codeowners": [],
   "after_dependencies": ["frontend"],
   "config_flow": true,

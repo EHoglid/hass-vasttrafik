@@ -134,17 +134,23 @@ class VasttrafikClient:
                 data={"grant_type": "client_credentials"},
             ) as response:
                 if response.status in (400, 401, 403):
-                    raise VasttrafikAuthenticationError("Invalid API credentials")
+                    raise VasttrafikAuthenticationError(
+                        "Invalid API credentials"
+                    )
                 response.raise_for_status()
                 data = await response.json()
         except VasttrafikAuthenticationError:
             raise
         except (ClientError, TimeoutError) as err:
-            raise VasttrafikApiError("Could not connect to Västtrafik") from err
+            raise VasttrafikApiError(
+                "Could not connect to Västtrafik"
+            ) from err
 
         token = data.get("access_token")
         if not token:
-            raise VasttrafikAuthenticationError("Token response contained no token")
+            raise VasttrafikAuthenticationError(
+                "Token response contained no token"
+            )
         self._access_token = token
         lifetime = int(data.get("expires_in", 3600))
         self._expires_at = time.monotonic() + lifetime - 300
@@ -165,13 +171,17 @@ class VasttrafikClient:
             ) as response:
                 if response.status == 401:
                     self._access_token = None
-                    raise VasttrafikAuthenticationError("Access token was rejected")
+                    raise VasttrafikAuthenticationError(
+                        "Access token was rejected"
+                    )
                 response.raise_for_status()
                 return await response.json()
         except VasttrafikAuthenticationError:
             raise
         except (ClientError, TimeoutError) as err:
-            raise VasttrafikApiError("Could not fetch Västtrafik data") from err
+            raise VasttrafikApiError(
+                "Could not fetch Västtrafik data"
+            ) from err
 
     async def async_search_stops(self, query: str) -> list[StopArea]:
         """Search for stop areas by name."""
@@ -205,7 +215,9 @@ class VasttrafikClient:
         while True:
             page_count += 1
             if page_count > MAX_DEPARTURE_PAGES:
-                raise VasttrafikApiError("Västtrafik returned too many departure pages")
+                raise VasttrafikApiError(
+                    "Västtrafik returned too many departure pages"
+                )
 
             params: dict[str, str | int | bool] = {
                 "timeSpanInMinutes": _bounded_int(

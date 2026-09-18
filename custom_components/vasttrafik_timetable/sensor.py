@@ -53,7 +53,9 @@ def _departure_attributes(departure: Departure) -> dict[str, Any]:
     }
 
 
-class VasttrafikSensorBase(CoordinatorEntity[VasttrafikCoordinator], SensorEntity):
+class VasttrafikSensorBase(
+    CoordinatorEntity[VasttrafikCoordinator], SensorEntity
+):
     """Base class for Västtrafik sensors."""
 
     _attr_has_entity_name = True
@@ -103,7 +105,8 @@ class VasttrafikNextDepartureSensor(VasttrafikSensorBase):
     def extra_state_attributes(self) -> dict[str, Any]:
         return {
             "departures": [
-                _departure_attributes(departure) for departure in self.coordinator.data
+                _departure_attributes(departure)
+                for departure in self.coordinator.data
             ]
         }
 

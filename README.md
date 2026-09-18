@@ -1,4 +1,4 @@
-# Västtrafik for Home Assistant
+# Västtrafik Journey Planner for Home Assistant
 
 [![CI](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml)
@@ -25,7 +25,7 @@ custom repository:
 3. Choose **Custom repositories**.
 4. Enter `EHoglid/hass-vasttrafik`.
 5. Select **Integration** as the repository type and click **Add**.
-6. Search for **Västtrafik**, download it, and restart Home Assistant.
+6. Search for **Västtrafik Journey Planner**, download it, and restart Home Assistant.
 
 ### Manual installation
 
@@ -33,13 +33,13 @@ custom repository:
    `custom_components` directory in your Home Assistant configuration.
 2. Restart Home Assistant.
 3. Open **Settings > Devices & services > Add integration** and search for
-  **Västtrafik**.
+  **Västtrafik Journey Planner**.
 
 ## Configuration
 
 1. Create an account at <https://developer.vasttrafik.se/>.
 2. Create an application and subscribe it to **Planera Resa v4**.
-3. Add **Västtrafik** in Home Assistant and enter the application's
+3. Add **Västtrafik Journey Planner** in Home Assistant and enter the application's
   Client ID and Client Secret the first time.
 4. Search for a stop, select a result, and configure its departure query.
 
