@@ -2,6 +2,10 @@
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
+filterwarnings = [
+	"ignore:Inheritance class HomeAssistantApplication from web\\.Application is discouraged:DeprecationWarning",
+	"ignore:'asyncio\\.iscoroutinefunction' is deprecated and slated for removal in Python 3\\.16; use inspect\\.iscoroutinefunction\\(\\) instead:DeprecationWarning",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
