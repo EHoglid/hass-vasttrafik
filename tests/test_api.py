@@ -42,8 +42,12 @@ def test_parse_departures() -> None:
                             "foregroundColor": "#00435c",
                             "borderColor": "#00435c",
                             "transportMode": "tram",
+                            "isWheelchairAccessible": True,
                         },
                         "direction": "Kortedala",
+                        "directionDetails": {
+                            "shortDirection": "Kortedala torg"
+                        },
                     },
                     "plannedTime": "2026-09-16T14:00:00+02:00",
                     "estimatedTime": "2026-09-16T14:03:00+02:00",
@@ -60,9 +64,11 @@ def test_parse_departures() -> None:
     assert departures[0].line_background_color == "#00f0da"
     assert departures[0].line_foreground_color == "#00435c"
     assert departures[0].line_border_color == "#00435c"
-    assert departures[0].direction == "Kortedala"
+    assert departures[0].direction == "Kortedala torg"
     assert departures[0].platform == "B"
+    assert departures[0].cancelled is False
     assert departures[0].transport_mode == "tram"
+    assert departures[0].is_wheelchair_accessible is True
     assert departures[0].delay_minutes == 3
 
 

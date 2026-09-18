@@ -50,6 +50,7 @@ def _departure_attributes(departure: Departure) -> dict[str, Any]:
         "delay_minutes": departure.delay_minutes,
         "cancelled": departure.cancelled,
         "transport_mode": departure.transport_mode,
+        "is_wheelchair_accessible": departure.is_wheelchair_accessible,
     }
 
 

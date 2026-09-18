@@ -56,6 +56,7 @@ class Departure:
     platform: str | None
     cancelled: bool
     transport_mode: str | None
+    is_wheelchair_accessible: bool | None
 
     @property
     def delay_minutes(self) -> int:
@@ -79,6 +80,7 @@ def parse_departures(payload: dict[str, Any]) -> list[Departure]:
 
         journey = item.get("serviceJourney") or {}
         line = journey.get("line") or {}
+        direction_details = journey.get("directionDetails") or {}
         stop_point = item.get("stopPoint") or {}
         platform = stop_point.get("platform") or {}
         estimated = item.get("estimatedTime") or planned
@@ -96,7 +98,11 @@ def parse_departures(payload: dict[str, Any]) -> list[Departure]:
                 line_background_color=line.get("backgroundColor"),
                 line_foreground_color=line.get("foregroundColor"),
                 line_border_color=line.get("borderColor"),
-                direction=str(journey.get("direction") or ""),
+                direction=str(
+                    direction_details.get("shortDirection")
+                    or journey.get("direction")
+                    or ""
+                ),
                 planned_time=planned_time,
                 estimated_time=estimated_time,
                 platform=(
@@ -110,6 +116,11 @@ def parse_departures(payload: dict[str, Any]) -> list[Departure]:
                 ),
                 cancelled=bool(item.get("isCancelled", False)),
                 transport_mode=line.get("transportMode"),
+                is_wheelchair_accessible=(
+                    item.get("isWheelchairAccessible")
+                    if "isWheelchairAccessible" in item
+                    else line.get("isWheelchairAccessible")
+                ),
             )
         )
 

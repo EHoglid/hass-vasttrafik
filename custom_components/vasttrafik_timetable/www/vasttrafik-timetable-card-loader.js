@@ -182,7 +182,7 @@ if (!customElements.get("vasttrafik-timetable-card")) {
 if (!customElements.get("vasttrafik-timetale-card")) {
     customElements.define(
         "vasttrafik-timetale-card",
-        class extends VasttrafikTimetableCardLoader {},
+        class extends VasttrafikTimetableCardLoader { },
     );
 }
 if (!customElements.get("vasttrafik-timetable-card-editor")) {

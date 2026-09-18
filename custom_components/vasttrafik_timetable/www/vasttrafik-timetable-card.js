@@ -109,9 +109,11 @@ class VasttrafikTimetableCard extends HTMLElement {
             then: swedish ? "Därefter" : "Then",
             platform: swedish ? "Läge" : "Platform",
             now: swedish ? "Nu" : "Now",
+            cancelled: swedish ? "Inställd" : "Cancelled",
             minutes: swedish ? "min" : "min",
             page: swedish ? "Sida" : "Page",
             noDepartures: swedish ? "Inga kommande avgångar." : "No upcoming departures.",
+            wheelchair: swedish ? "Visa rullstolsikon" : "Show wheelchair icon",
         };
         return labels[key];
     }
@@ -189,6 +191,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 : "m"
         );
         const showDepartureAfter = this._config?.show_departure_after !== false;
+        const showWheelchair = this._config?.show_wheelchair_accessible === true;
         const rowsPerPage = this._rowsPerPage(cardSize, showDepartureAfter);
         const pageSeconds = Math.max(
             1,
@@ -223,7 +226,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             .replace(/\s+Next departure$/i, "");
 
         if (this._observedCard) {
-            this._resizeObserver.unobserve(this._observedCard);
+            this._resizeObserver?.unobserve(this._observedCard);
             this._observedCard = null;
         }
         this.shadowRoot.innerHTML = `
@@ -244,6 +247,9 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .destination strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                 small, .time span { display: block; color: var(--secondary-text-color, #5f6368); font-size: 11px; }
                 .time { text-align: center; } .time strong { font-size: 22px; } .time.missing { color: var(--disabled-text-color, #9e9e9e); }
+                .time.cancelled strong { color: var(--error-color, #db4437); font-size: 13px; text-transform: uppercase; }
+                .time-main { align-items: center; display: flex; gap: 6px; justify-content: center; }
+                .time-main ha-icon { color: var(--secondary-text-color, #5f6368); --mdc-icon-size: 18px; }
                 .platform { background: var(--primary-text-color, #212121); border-radius: 50%; color: var(--ha-card-background, var(--card-background-color, #fff)); font-size: 16px; font-weight: 800; height: 30px; justify-self: center; line-height: 30px; text-align: center; width: 30px; }
                 .departures { flex: 1 1 auto; min-height: 0; overflow: hidden; }
                 .empty { padding: 20px; color: var(--secondary-text-color, #5f6368); }
@@ -264,6 +270,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.xs .mode ha-icon { --mdc-icon-size: 16px; }
                 ha-card.xs .destination strong { font-size: 12px; }
                 ha-card.xs .time strong { font-size: 15px; }
+                ha-card.xs .time-main ha-icon { --mdc-icon-size: 15px; }
                 ha-card.xs .time small, ha-card.xs .time span { display: none; }
                 ha-card.xs .platform { font-size: 13px; height: 24px; line-height: 24px; width: 24px; }
                 ha-card.s .columns, ha-card.s .departure { grid-template-columns: 20px 40px minmax(0, 1fr) 56px 56px 52px; gap: 5px; }
@@ -273,6 +280,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.s .mode ha-icon { --mdc-icon-size: 18px; }
                 ha-card.s .destination strong { font-size: 13px; }
                 ha-card.s .time strong { font-size: 17px; }
+                ha-card.s .time-main ha-icon { --mdc-icon-size: 16px; }
                 ha-card.s .time small, ha-card.s .time span { display: none; }
                 ha-card.s .platform { font-size: 14px; height: 26px; line-height: 26px; width: 26px; }
                 ha-card.m .departure { min-height: 70px; }
@@ -305,7 +313,7 @@ class VasttrafikTimetableCard extends HTMLElement {
     <ha-card class="${cardSize} ${showDepartureAfter ? "with-then" : "without-then"}">
         <div class="header">${this._escape(title)}</div>
         <div class="columns"><span class="stop-title">${this._escape(title)}</span><span></span><span></span><span>${this._text("next")}</span>${showDepartureAfter ? `<span>${this._text("then")}</span>` : ""}<span>${this._text("platform")}</span></div>
-                <div class="departures">${pageGroups.map((group) => this._row(group, cardSize, showDepartureAfter)).join("") || `<div class="empty">${this._text("noDepartures")}</div>`}</div>
+                <div class="departures">${pageGroups.map((group) => this._row(group, cardSize, showDepartureAfter, showWheelchair)).join("") || `<div class="empty">${this._text("noDepartures")}</div>`}</div>
                 ${pageCount > 1 ? `<div class="pager" aria-label="${this._text("page")} ${pageIndex + 1} / ${pageCount}">
                     <span>${this._text("page")} ${pageIndex + 1} / ${pageCount}</span>
                     ${Array.from({ length: pageCount }, (_, index) => index === pageIndex
@@ -332,7 +340,7 @@ class VasttrafikTimetableCard extends HTMLElement {
         }
     }
 
-    _row(group, cardSize, showDepartureAfter) {
+    _row(group, cardSize, showDepartureAfter, showWheelchair) {
         const departure = group[0];
         const background = departure.line_background_color || "#555555";
         const foreground = departure.line_foreground_color || "#ffffff";
@@ -356,7 +364,13 @@ class VasttrafikTimetableCard extends HTMLElement {
                 return '<div class="time missing">-</div>';
             }
             const minutes = this._minutes(item.estimated_time);
-            return `<div class="time ${["xs", "s"].includes(cardSize) ? "compact" : ""}"><strong>${minutes === 0 ? this._text("now") : minutes}</strong><span>${this._formatTime(item.estimated_time)}</span></div>`;
+            const timeValue = item.cancelled
+                ? this._text("cancelled")
+                : minutes === 0 ? this._text("now") : minutes;
+            const wheelchair = showWheelchair && item.is_wheelchair_accessible
+                ? '<ha-icon icon="mdi:wheelchair-accessibility"></ha-icon>'
+                : "";
+            return `<div class="time ${item.cancelled ? "cancelled" : ""} ${["xs", "s"].includes(cardSize) ? "compact" : ""}"><div class="time-main"><strong>${timeValue}</strong>${wheelchair}</div><span>${this._formatTime(item.estimated_time)}</span></div>`;
         });
 
         return `<div class="departure">
@@ -398,12 +412,12 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             ? {
                 entity: "Avgångsenhet", lines: "Linjer att visa",
                 after: "Visa avgång efter", size: "Kortstorlek",
-                seconds: "Sekunder per sida",
+                seconds: "Sekunder per sida", wheelchair: "Visa rullstolsikon",
             }
             : {
                 entity: "Departure entity", lines: "Lines to show",
                 after: "Show departure after", size: "Card size",
-                seconds: "Seconds per page",
+                seconds: "Seconds per page", wheelchair: "Show wheelchair icon",
             };
         const entities = Object.keys(this._hass.states).filter((entityId) =>
             entityId.startsWith("sensor.") && Array.isArray(this._hass.states[entityId].attributes.departures),
@@ -419,6 +433,10 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="true" ${this._config?.show_departure_after !== false ? "selected" : ""}>True</option>
                 <option value="false" ${this._config?.show_departure_after === false ? "selected" : ""}>False</option>
             </select></label>
+            <label>${labels.wheelchair}<select id="show_wheelchair_accessible">
+                <option value="false" ${this._config?.show_wheelchair_accessible !== true ? "selected" : ""}>False</option>
+                <option value="true" ${this._config?.show_wheelchair_accessible === true ? "selected" : ""}>True</option>
+            </select></label>
             <label>${labels.seconds}<input id="page_seconds" type="number" min="1" max="60" value="${this._config?.page_seconds || 5}"></label>
             <label>${labels.size}<select id="size">
                 <option value="xs" ${!this._config?.size || this._config?.size === "xs" ? "selected" : ""}>XS (0.75 row)</option>
@@ -428,9 +446,9 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (1.5 rows)</option>
             </select></label>
         `;
-        for (const id of ["entity", "lines", "show_departure_after", "page_seconds", "size"]) {
+        for (const id of ["entity", "lines", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
             this.querySelector(`#${id}`).addEventListener("change", (event) => {
-                const value = id === "show_departure_after"
+                const value = ["show_departure_after", "show_wheelchair_accessible"].includes(id)
                     ? event.target.value === "true"
                     : id === "page_seconds"
                         ? Number(event.target.value)

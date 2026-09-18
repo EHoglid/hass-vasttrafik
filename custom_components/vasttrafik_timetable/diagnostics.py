@@ -34,6 +34,7 @@ async def async_get_config_entry_diagnostics(
                 "platform": departure.platform,
                 "cancelled": departure.cancelled,
                 "transport_mode": departure.transport_mode,
+                "is_wheelchair_accessible": departure.is_wheelchair_accessible,
             }
             for departure in (coordinator.data or [])
         ],
