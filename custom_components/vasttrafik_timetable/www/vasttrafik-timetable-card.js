@@ -232,7 +232,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .line { background: var(--line-background); color: var(--line-foreground); border: 2px solid var(--line-border); border-radius: 5px; padding: 5px 2px; text-align: center; font-size: 18px; font-weight: 800; }
                 .destination strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                 small, .time span { display: block; color: var(--secondary-text-color, #5f6368); font-size: 11px; }
-                .time { text-align: center; } .time strong { font-size: 19px; } .time.missing { color: var(--disabled-text-color, #9e9e9e); }
+                .time { text-align: center; } .time strong { font-size: 22px; } .time.missing { color: var(--disabled-text-color, #9e9e9e); }
                 .platform { background: var(--primary-text-color, #212121); border-radius: 50%; color: var(--ha-card-background, var(--card-background-color, #fff)); font-size: 16px; font-weight: 800; height: 30px; justify-self: center; line-height: 30px; text-align: center; width: 30px; }
                 .departures { flex: 1 1 auto; min-height: 0; overflow: hidden; }
                 .empty { padding: 20px; color: var(--secondary-text-color, #5f6368); }
@@ -270,7 +270,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.l .columns { font-size: 13px; }
                 ha-card.l .destination strong { font-size: 21px; }
                 ha-card.l .destination small, ha-card.l .time small, ha-card.l .time span { font-size: 13px; }
-                ha-card.l .time strong { font-size: 26px; }
+                ha-card.l .time strong { font-size: 29px; }
                 ha-card.l .platform { font-size: 19px; height: 36px; line-height: 36px; width: 36px; }
                 ha-card.xl .header { padding: 20px 22px 12px; font-size: 30px; }
                 ha-card.xl .columns, ha-card.xl .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px 84px; gap: 12px; }
@@ -281,7 +281,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.xl .columns { font-size: 14px; }
                 ha-card.xl .destination strong { font-size: 30px; }
                 ha-card.xl .destination small, ha-card.xl .time small, ha-card.xl .time span { font-size: 14px; }
-                ha-card.xl .time strong { font-size: 26px; }
+                ha-card.xl .time strong { font-size: 32px; }
                 ha-card.xl .platform { font-size: 20px; height: 40px; line-height: 40px; width: 40px; }
             </style>
     <ha-card class="${cardSize} ${showDepartureAfter ? "with-then" : "without-then"}">
@@ -338,7 +338,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 return '<div class="time missing">-</div>';
             }
             const minutes = this._minutes(item.estimated_time);
-            return `<div class="time ${["xs", "s"].includes(cardSize) ? "compact" : ""}"><strong>${minutes === 0 ? this._text("now") : minutes}</strong><small>${minutes === 0 ? "" : this._text("minutes")}</small><span>${this._formatTime(item.estimated_time)}</span></div>`;
+            return `<div class="time ${["xs", "s"].includes(cardSize) ? "compact" : ""}"><strong>${minutes === 0 ? this._text("now") : minutes}</strong><span>${this._formatTime(item.estimated_time)}</span></div>`;
         });
 
         return `<div class="departure">
