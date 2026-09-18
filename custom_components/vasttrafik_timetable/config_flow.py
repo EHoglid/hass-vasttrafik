@@ -139,23 +139,29 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                stops = await self._client().async_search_stops(
-                    user_input["query"]
-                )
-            except VasttrafikAuthenticationError:
-                return await self.async_step_user()
-            except VasttrafikApiError:
-                errors["base"] = "cannot_connect"
-            else:
-                if stops:
-                    self._stops = {stop.gid: stop for stop in stops}
-                    return await self.async_step_select()
-                errors["base"] = "no_stops"
+                query = self._validate_query(user_input.get("query", ""))
+            except vol.Invalid:
+                query = ""
+
+            if not query and "query" in user_input:
+                errors["query"] = "required"
+            elif query:
+                try:
+                    stops = await self._client().async_search_stops(query)
+                except VasttrafikAuthenticationError:
+                    return await self.async_step_user()
+                except VasttrafikApiError:
+                    errors["base"] = "cannot_connect"
+                else:
+                    if stops:
+                        self._stops = {stop.gid: stop for stop in stops}
+                        return await self.async_step_select()
+                    errors["base"] = "no_stops"
 
         return self.async_show_form(
             step_id="search",
             data_schema=vol.Schema(
-                {vol.Required("query"): self._validate_query}
+                {vol.Optional("query"): str}, extra=vol.ALLOW_EXTRA
             ),
             errors=errors,
         )
@@ -192,24 +198,36 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Configure the departure query for this stop."""
         if self._selected_stop is None:
             return await self.async_step_search()
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(
-                title=self._selected_stop.name,
-                data={
-                    **self._credentials,
-                    CONF_STOP_GID: self._selected_stop.gid,
-                    CONF_STOP_NAME: self._selected_stop.name,
-                    **user_input,
-                },
-            )
+            try:
+                user_input[CONF_START_DATE_TIME] = self._validate_datetime(
+                    user_input[CONF_START_DATE_TIME]
+                )
+            except vol.Invalid:
+                errors[CONF_START_DATE_TIME] = "invalid_datetime"
+            try:
+                user_input[CONF_DIRECTION_GID] = self._validate_stop_gid(
+                    user_input[CONF_DIRECTION_GID]
+                )
+            except vol.Invalid:
+                errors[CONF_DIRECTION_GID] = "invalid_stop_gid"
+            if not errors:
+                return self.async_create_entry(
+                    title=self._selected_stop.name,
+                    data={
+                        **self._credentials,
+                        CONF_STOP_GID: self._selected_stop.gid,
+                        CONF_STOP_NAME: self._selected_stop.name,
+                        **user_input,
+                    },
+                )
 
         return self.async_show_form(
             step_id="options",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(
-                        CONF_START_DATE_TIME, default=""
-                    ): self._validate_datetime,
+                    vol.Optional(CONF_START_DATE_TIME, default=""): str,
                     vol.Optional(CONF_PLATFORMS, default=""): str,
                     vol.Required(
                         CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN
@@ -222,11 +240,10 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_API_LIMIT, default=DEFAULT_API_LIMIT
                     ): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
                     vol.Optional(CONF_INCLUDE_OCCUPANCY, default=False): bool,
-                    vol.Optional(
-                        CONF_DIRECTION_GID, default=""
-                    ): self._validate_stop_gid,
+                    vol.Optional(CONF_DIRECTION_GID, default=""): str,
                 }
             ),
+            errors=errors,
         )
 
     async def async_step_reauth(

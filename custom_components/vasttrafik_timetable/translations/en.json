@@ -47,7 +47,9 @@
     },
     "error": {
       "cannot_connect": "Could not connect to Västtrafik.",
+      "invalid_datetime": "Enter a valid RFC 3339 date and time.",
       "invalid_auth": "The API credentials are invalid.",
+      "invalid_stop_gid": "Enter a 16-digit stop-area GID.",
       "no_stops": "No stops were found. Try a shorter search."
     },
     "abort": {

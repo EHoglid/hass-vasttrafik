@@ -47,7 +47,9 @@
     },
     "error": {
       "cannot_connect": "Kunde inte ansluta till Västtrafik.",
+      "invalid_datetime": "Ange ett giltigt datum och klockslag i RFC 3339-format.",
       "invalid_auth": "API-uppgifterna är ogiltiga.",
+      "invalid_stop_gid": "Ange ett 16-siffrigt GID för hållplatsområdet.",
       "no_stops": "Inga hållplatser hittades. Försök med en kortare sökning."
     },
     "abort": {
