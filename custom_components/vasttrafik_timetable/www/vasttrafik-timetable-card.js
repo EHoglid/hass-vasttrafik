@@ -1,3 +1,5 @@
+window.__vasttrafikTimetableCardLoaded = true;
+
 class VasttrafikTimetableCard extends HTMLElement {
     constructor() {
         super();
@@ -6,7 +8,17 @@ class VasttrafikTimetableCard extends HTMLElement {
         this._timer = null;
         this._availableHeight = 0;
         this._chromeHeight = 0;
-        this._resizeObserver = new ResizeObserver((entries) => {
+        this._resizeObserver = this._createResizeObserver();
+        this._resizeObserver?.observe(this);
+        this._observedCard = null;
+    }
+
+    _createResizeObserver() {
+        if (!("ResizeObserver" in window)) {
+            return null;
+        }
+
+        return new ResizeObserver((entries) => {
             const height = Math.round(Math.max(
                 ...entries.map((entry) => entry.contentRect.height),
                 0,
@@ -16,8 +28,6 @@ class VasttrafikTimetableCard extends HTMLElement {
                 this._render();
             }
         });
-        this._resizeObserver.observe(this);
-        this._observedCard = null;
     }
 
     static getConfigElement() {
@@ -34,7 +44,7 @@ class VasttrafikTimetableCard extends HTMLElement {
     }
 
     connectedCallback() {
-        this._resizeObserver.observe(this);
+        this._resizeObserver?.observe(this);
         this._ensureTimer();
     }
 
@@ -49,7 +59,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             clearInterval(this._timer);
             this._timer = null;
         }
-        this._resizeObserver.disconnect();
+        this._resizeObserver?.disconnect();
     }
 
     getCardSize() {
@@ -306,7 +316,7 @@ class VasttrafikTimetableCard extends HTMLElement {
     `;
         const card = this.shadowRoot.querySelector("ha-card");
         if (card) {
-            this._resizeObserver.observe(card);
+            this._resizeObserver?.observe(card);
             this._observedCard = card;
         }
         const header = this.shadowRoot.querySelector(".header");
