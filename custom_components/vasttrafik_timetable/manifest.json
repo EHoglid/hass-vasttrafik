@@ -2,7 +2,7 @@
   "domain": "vasttrafik_timetable",
   "name": "Västtrafik Journey Planner",
   "codeowners": [],
-  "after_dependencies": ["frontend", "lovelace"],
+  "dependencies": ["frontend", "lovelace"],
   "config_flow": true,
   "documentation": "https://developer.vasttrafik.se/",
   "integration_type": "service",

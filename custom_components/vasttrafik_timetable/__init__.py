@@ -24,16 +24,22 @@ _LOGGER = logging.getLogger(__name__)
 type VasttrafikConfigEntry = ConfigEntry[VasttrafikCoordinator]
 
 CARD_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
+DATA_FRONTEND_URL = "vasttrafik_timetable_frontend_url"
+DATA_STATIC_PATH_REGISTERED = "vasttrafik_timetable_static_path_registered"
+DATA_LOVELACE_RESOURCE_URL = "vasttrafik_timetable_lovelace_resource_url"
 
 
 async def _async_register_lovelace_resource(
     hass: HomeAssistant, card_url: str
-) -> None:
+) -> bool:
     """Register the card as a Lovelace module resource."""
+    if hass.data.get(DATA_LOVELACE_RESOURCE_URL) == card_url:
+        return True
+
     lovelace_data = hass.data.get(LOVELACE_DATA)
     if lovelace_data is None:
         _LOGGER.debug("Lovelace is not loaded; skipping card resource setup")
-        return
+        return False
 
     if lovelace_data.resource_mode != MODE_STORAGE:
         _LOGGER.warning(
@@ -42,13 +48,13 @@ async def _async_register_lovelace_resource(
             card_url,
             lovelace_data.resource_mode,
         )
-        return
+        return False
 
     if not isinstance(
         lovelace_data.resources, lovelace_resources.ResourceStorageCollection
     ):
         _LOGGER.warning("Unable to register Lovelace resource automatically")
-        return
+        return False
 
     resources = cast(
         lovelace_resources.ResourceStorageCollection, lovelace_data.resources
@@ -82,12 +88,12 @@ async def _async_register_lovelace_resource(
             continue
         await resources.async_delete_item(old_item["id"])
 
+    hass.data[DATA_LOVELACE_RESOURCE_URL] = card_url
+    return True
+
 
 async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     """Register the built-in Västtrafik timetable dashboard card."""
-    if hass.data.get("vasttrafik_timetable_frontend_registered"):
-        return
-
     card_file = Path(__file__).parent / "www" / "vasttrafik-timetable-card.js"
     # Bust the browser cache only when the file actually changes, while still
     # allowing it to be cached (cache_headers=False forced an uncached refetch
@@ -95,18 +101,23 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     # "Custom element doesn't exist" errors).
     cache_bust = int(card_file.stat().st_mtime)
     card_url = f"{CARD_PATH}?v={cache_bust}"
-    await hass.http.async_register_static_paths(
-        [
-            StaticPathConfig(
-                CARD_PATH,
-                str(card_file),
-                cache_headers=True,
-            )
-        ]
-    )
-    add_extra_js_url(hass, card_url)
+    if not hass.data.get(DATA_STATIC_PATH_REGISTERED):
+        await hass.http.async_register_static_paths(
+            [
+                StaticPathConfig(
+                    CARD_PATH,
+                    str(card_file),
+                    cache_headers=True,
+                )
+            ]
+        )
+        hass.data[DATA_STATIC_PATH_REGISTERED] = True
+
+    if hass.data.get(DATA_FRONTEND_URL) != card_url:
+        add_extra_js_url(hass, card_url)
+        hass.data[DATA_FRONTEND_URL] = card_url
+
     await _async_register_lovelace_resource(hass, card_url)
-    hass.data["vasttrafik_timetable_frontend_registered"] = True
     _LOGGER.debug("Registered dashboard card resource at %s", card_url)
 
 
