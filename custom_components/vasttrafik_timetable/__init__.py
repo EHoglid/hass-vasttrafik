@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from homeassistant.components.frontend import add_extra_js_url
@@ -13,6 +14,8 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import VasttrafikClient
 from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, PLATFORMS
 from .coordinator import VasttrafikCoordinator
+
+_LOGGER = logging.getLogger(__name__)
 
 type VasttrafikConfigEntry = ConfigEntry[VasttrafikCoordinator]
 
@@ -41,6 +44,7 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     )
     add_extra_js_url(hass, card_url)
     hass.data["vasttrafik_timetable_frontend_registered"] = True
+    _LOGGER.debug("Registered dashboard card resource at %s", card_url)
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -53,6 +57,7 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: VasttrafikConfigEntry
 ) -> bool:
     """Set up Västtrafik Timetable from a config entry."""
+    _LOGGER.debug("Setting up config entry %s", entry.entry_id)
     await _async_register_frontend_card(hass)
     client = VasttrafikClient(
         async_get_clientsession(hass),
@@ -70,4 +75,5 @@ async def async_unload_entry(
     hass: HomeAssistant, entry: VasttrafikConfigEntry
 ) -> bool:
     """Unload a Västtrafik Timetable config entry."""
+    _LOGGER.debug("Unloading config entry %s", entry.entry_id)
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

@@ -49,15 +49,29 @@ class VasttrafikCoordinator(DataUpdateCoordinator[list[Departure]]):
                 self._stop_gid, dict(self._entry.data)
             )
         except VasttrafikAuthenticationError as err:
+            _LOGGER.warning(
+                "Västtrafik credentials for stop %s were rejected",
+                self._stop_gid,
+            )
             raise ConfigEntryAuthFailed(
                 "Västtrafik credentials were rejected"
             ) from err
         except VasttrafikApiError as err:
+            _LOGGER.warning(
+                "Error updating departures for stop %s: %s",
+                self._stop_gid,
+                err,
+            )
             raise UpdateFailed(
                 f"Error communicating with Västtrafik: {err}"
             ) from err
 
         sorted_departures = sorted(
             departures, key=lambda item: item.estimated_time
+        )
+        _LOGGER.debug(
+            "Fetched %d departures for stop %s",
+            len(sorted_departures),
+            self._stop_gid,
         )
         return sorted_departures

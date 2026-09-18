@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
 from aiohttp import BasicAuth, ClientError, ClientSession
+
+_LOGGER = logging.getLogger(__name__)
 
 TOKEN_URL = "https://ext-api.vasttrafik.se/token"
 API_BASE_URL = "https://ext-api.vasttrafik.se/pr/v4"
@@ -134,6 +137,10 @@ class VasttrafikClient:
                 data={"grant_type": "client_credentials"},
             ) as response:
                 if response.status in (400, 401, 403):
+                    _LOGGER.warning(
+                        "Västtrafik rejected the API credentials (HTTP %s)",
+                        response.status,
+                    )
                     raise VasttrafikAuthenticationError(
                         "Invalid API credentials"
                     )
@@ -142,18 +149,27 @@ class VasttrafikClient:
         except VasttrafikAuthenticationError:
             raise
         except (ClientError, TimeoutError) as err:
+            _LOGGER.error(
+                "Could not connect to Västtrafik token endpoint: %s", err
+            )
             raise VasttrafikApiError(
                 "Could not connect to Västtrafik"
             ) from err
 
         token = data.get("access_token")
         if not token:
+            _LOGGER.error(
+                "Västtrafik token response contained no access_token"
+            )
             raise VasttrafikAuthenticationError(
                 "Token response contained no token"
             )
         self._access_token = token
         lifetime = int(data.get("expires_in", 3600))
         self._expires_at = time.monotonic() + lifetime - 300
+        _LOGGER.debug(
+            "Authenticated with Västtrafik, token valid for %ss", lifetime
+        )
 
     async def _async_headers(self) -> dict[str, str]:
         if self._access_token is None or time.monotonic() >= self._expires_at:
@@ -171,6 +187,9 @@ class VasttrafikClient:
             ) as response:
                 if response.status == 401:
                     self._access_token = None
+                    _LOGGER.warning(
+                        "Västtrafik access token was rejected on %s", path
+                    )
                     raise VasttrafikAuthenticationError(
                         "Access token was rejected"
                     )
@@ -179,6 +198,9 @@ class VasttrafikClient:
         except VasttrafikAuthenticationError:
             raise
         except (ClientError, TimeoutError) as err:
+            _LOGGER.error(
+                "Could not fetch Västtrafik data from %s: %s", path, err
+            )
             raise VasttrafikApiError(
                 "Could not fetch Västtrafik data"
             ) from err
