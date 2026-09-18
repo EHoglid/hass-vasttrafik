@@ -219,27 +219,27 @@ class VasttrafikTimetableCard extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <style>
                 :host { display: block; height: 100%; }
-                ha-card { background: #20262c; color: #f8fafc; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+                ha-card { background: var(--ha-card-background, var(--card-background-color, #fff)); color: var(--primary-text-color, #212121); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
                 ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px; }
                 .header { padding: 14px 16px 8px; font-size: 22px; font-weight: 700; }
                 .columns, .departure { display: grid; grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px 64px; gap: 8px; align-items: center; }
-                .columns { padding: 2px 16px 6px; color: #cbd5e1; font-weight: 700; font-size: 12px; }
+                .columns { padding: 2px 16px 6px; color: var(--secondary-text-color, #5f6368); font-weight: 700; font-size: 12px; }
                 .columns span { white-space: nowrap; }
                 .columns span:nth-child(n + 4) { justify-self: center; text-align: center; }
-                .departure { min-height: 84px; padding: 9px 16px; border-top: 1px solid #68717b; box-sizing: border-box; }
+                .departure { min-height: 84px; padding: 9px 16px; border-top: 1px solid var(--divider-color, #d7d9dc); box-sizing: border-box; }
                 .mode { color: #d7dde5; text-align: center; }
                 .mode ha-icon { --mdc-icon-size: 20px; }
                 .line { background: var(--line-background); color: var(--line-foreground); border: 2px solid var(--line-border); border-radius: 5px; padding: 5px 2px; text-align: center; font-size: 18px; font-weight: 800; }
                 .destination strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-                small, .time span { display: block; color: #cbd5e1; font-size: 11px; }
-                .time { text-align: center; } .time strong { font-size: 19px; } .time.missing { color: #68717b; }
-                .platform { background: #f8fafc; border-radius: 50%; color: #20262c; font-size: 16px; font-weight: 800; height: 30px; justify-self: center; line-height: 30px; text-align: center; width: 30px; }
+                small, .time span { display: block; color: var(--secondary-text-color, #5f6368); font-size: 11px; }
+                .time { text-align: center; } .time strong { font-size: 19px; } .time.missing { color: var(--disabled-text-color, #9e9e9e); }
+                .platform { background: var(--primary-text-color, #212121); border-radius: 50%; color: var(--ha-card-background, var(--card-background-color, #fff)); font-size: 16px; font-weight: 800; height: 30px; justify-self: center; line-height: 30px; text-align: center; width: 30px; }
                 .departures { flex: 1 1 auto; min-height: 0; overflow: hidden; }
-                .empty { padding: 20px; color: #cbd5e1; }
-                .pager { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px 10px; color: #cbd5e1; font-size: 11px; }
-                .page-progress { background: #68717b; border: 2px solid #f8fafc; border-radius: 8px; box-sizing: border-box; display: block; flex: 0 0 128px; height: 12px; overflow: hidden; width: 128px; }
-                .page-progress-fill { background: #f8fafc; display: block; height: 100%; transition: width 0.9s linear; width: 0; }
-                .dot { border: 2px solid #f8fafc; border-radius: 50%; box-sizing: border-box; height: 10px; width: 10px; }
+                .empty { padding: 20px; color: var(--secondary-text-color, #5f6368); }
+                .pager { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px 10px; color: var(--secondary-text-color, #5f6368); font-size: 11px; }
+                .page-progress { background: var(--secondary-background-color, var(--divider-color, #d7d9dc)); border: 2px solid var(--primary-text-color, #212121); border-radius: 8px; box-sizing: border-box; display: block; flex: 0 0 128px; height: 12px; overflow: hidden; width: 128px; }
+                .page-progress-fill { background: var(--primary-color, #03a9f4); display: block; height: 100%; transition: width 0.9s linear; width: 0; }
+                .dot { border: 2px solid var(--primary-text-color, #212121); border-radius: 50%; box-sizing: border-box; height: 10px; width: 10px; }
                 @media (max-width: 500px) { .columns, .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px 54px; gap: 5px; } .departure { padding: 8px 12px; } .columns { padding-left: 12px; padding-right: 12px; } .header { padding-left: 12px; } .destination strong { font-size: 14px; } ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px; } }
                 ha-card.xs .columns, ha-card.xs .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 48px 44px; gap: 4px; }
                 ha-card.xs.without-then .columns, ha-card.xs.without-then .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 44px; }
