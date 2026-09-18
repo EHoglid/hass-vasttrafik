@@ -223,7 +223,8 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px; }
                 .header { padding: 8px 16px 6px; font-size: 26px; font-weight: 700; }
                 .columns, .departure { display: grid; grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px 64px; gap: 8px; align-items: center; }
-                .columns { padding: 2px 16px 6px; color: var(--secondary-text-color, #5f6368); font-weight: 700; font-size: 12px; }
+                .columns { padding: 8px 16px 6px; color: var(--secondary-text-color, #5f6368); font-weight: 700; font-size: 12px; }
+                .columns .stop-title { justify-self: start; align-self: center; color: var(--primary-text-color, #212121); font-size: 26px; line-height: 1; }
                 .columns span { white-space: nowrap; }
                 .columns span:nth-child(n + 4) { justify-self: center; text-align: center; }
                 .departure { min-height: 84px; padding: 9px 16px; border-top: 1px solid var(--divider-color, #d7d9dc); box-sizing: border-box; }
@@ -240,9 +241,12 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .page-progress { background: var(--secondary-background-color, var(--divider-color, #d7d9dc)); border: 2px solid var(--primary-text-color, #212121); border-radius: 8px; box-sizing: border-box; display: block; flex: 0 0 128px; height: 12px; overflow: hidden; width: 128px; }
                 .page-progress-fill { background: var(--primary-color, #03a9f4); display: block; height: 100%; transition: width 0.9s linear; width: 0; }
                 .dot { border: 2px solid var(--primary-text-color, #212121); border-radius: 50%; box-sizing: border-box; height: 10px; width: 10px; }
-                @media (max-width: 500px) { .columns, .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px 54px; gap: 5px; } .departure { padding: 8px 12px; } .columns { padding-left: 12px; padding-right: 12px; } .header { padding: 7px 12px 5px; font-size: 22px; } .destination strong { font-size: 14px; } ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px; } }
-                ha-card.xs .header { padding: 7px 12px 4px; font-size: 20px; }
-                ha-card.s .header { padding: 8px 12px 5px; font-size: 22px; }
+                @media (max-width: 500px) { .columns, .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px 54px; gap: 5px; } .departure { padding: 8px 12px; } .columns { padding-left: 12px; padding-right: 12px; } .columns .stop-title { font-size: 22px; } .header { display: none; } .destination strong { font-size: 14px; } ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px; } }
+                ha-card.xs .header, ha-card.s .header, ha-card.m .header, ha-card.l .header, ha-card.xl .header { display: none; }
+                ha-card.xs .columns .stop-title { font-size: 20px; }
+                ha-card.s .columns .stop-title { font-size: 22px; }
+                ha-card.l .columns .stop-title { font-size: 30px; }
+                ha-card.xl .columns .stop-title { font-size: 34px; }
                 ha-card.xs .columns, ha-card.xs .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 48px 44px; gap: 4px; }
                 ha-card.xs.without-then .columns, ha-card.xs.without-then .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 44px; }
                 ha-card.xs .departure { min-height: 42px; padding: 3px 8px; }
@@ -288,7 +292,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             </style>
     <ha-card class="${cardSize} ${showDepartureAfter ? "with-then" : "without-then"}">
         <div class="header">${this._escape(title)}</div>
-        <div class="columns"><span></span><span></span><span></span><span>${this._text("next")}</span>${showDepartureAfter ? `<span>${this._text("then")}</span>` : ""}<span>${this._text("platform")}</span></div>
+        <div class="columns"><span class="stop-title">${this._escape(title)}</span><span></span><span></span><span>${this._text("next")}</span>${showDepartureAfter ? `<span>${this._text("then")}</span>` : ""}<span>${this._text("platform")}</span></div>
                 <div class="departures">${pageGroups.map((group) => this._row(group, cardSize, showDepartureAfter)).join("") || `<div class="empty">${this._text("noDepartures")}</div>`}</div>
                 ${pageCount > 1 ? `<div class="pager" aria-label="${this._text("page")} ${pageIndex + 1} / ${pageCount}">
                     <span>${this._text("page")} ${pageIndex + 1} / ${pageCount}</span>
