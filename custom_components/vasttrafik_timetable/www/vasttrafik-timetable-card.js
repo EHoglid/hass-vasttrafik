@@ -368,7 +368,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ? this._text("cancelled")
                 : minutes === 0 ? this._text("now") : minutes;
             const wheelchair = showWheelchair && item.is_wheelchair_accessible
-                ? '<ha-icon icon="mdi:wheelchair-accessibility"></ha-icon>'
+                ? '<ha-icon icon="mdi:wheelchair"></ha-icon>'
                 : "";
             return `<div class="time ${item.cancelled ? "cancelled" : ""} ${["xs", "s"].includes(cardSize) ? "compact" : ""}"><div class="time-main"><strong>${timeValue}</strong>${wheelchair}</div><span>${this._formatTime(item.estimated_time)}</span></div>`;
         });
