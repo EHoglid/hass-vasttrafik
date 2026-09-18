@@ -263,16 +263,20 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.l.without-then .columns, ha-card.l.without-then .departure { grid-template-columns: 28px 58px minmax(0, 1fr) 76px 76px; }
                 ha-card.l .departure { min-height: 84px; padding: 13px 20px; }
                 ha-card.l .line { font-size: 22px; padding: 7px 3px; }
-                ha-card.l .destination strong { font-size: 18px; }
-                ha-card.l .time strong { font-size: 23px; }
+                ha-card.l .columns { font-size: 13px; }
+                ha-card.l .destination strong { font-size: 21px; }
+                ha-card.l .destination small, ha-card.l .time small, ha-card.l .time span { font-size: 13px; }
+                ha-card.l .time strong { font-size: 26px; }
                 ha-card.l .platform { font-size: 19px; height: 36px; line-height: 36px; width: 36px; }
                 ha-card.xl .header { padding: 20px 22px 12px; font-size: 30px; }
                 ha-card.xl .columns, ha-card.xl .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px 84px; gap: 12px; }
                 ha-card.xl.without-then .columns, ha-card.xl.without-then .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px; }
                 ha-card.xl .departure { min-height: 112px; padding: 16px 22px; }
                 ha-card.xl .line { font-size: 24px; padding: 8px 4px; }
-                ha-card.xl .destination strong { font-size: 19px; }
-                ha-card.xl .time strong { font-size: 25px; }
+                ha-card.xl .columns { font-size: 14px; }
+                ha-card.xl .destination strong { font-size: 24px; }
+                ha-card.xl .destination small, ha-card.xl .time small, ha-card.xl .time span { font-size: 14px; }
+                ha-card.xl .time strong { font-size: 30px; }
                 ha-card.xl .platform { font-size: 20px; height: 40px; line-height: 40px; width: 40px; }
             </style>
     <ha-card class="${cardSize} ${showDepartureAfter ? "with-then" : "without-then"}">
