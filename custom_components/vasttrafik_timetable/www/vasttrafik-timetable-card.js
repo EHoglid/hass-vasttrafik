@@ -227,7 +227,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .columns span { white-space: nowrap; }
                 .columns span:nth-child(n + 4) { justify-self: center; text-align: center; }
                 .departure { min-height: 84px; padding: 9px 16px; border-top: 1px solid var(--divider-color, #d7d9dc); box-sizing: border-box; }
-                .mode { color: #d7dde5; text-align: center; }
+                .mode { color: var(--secondary-text-color, #5f6368); text-align: center; }
                 .mode ha-icon { --mdc-icon-size: 20px; }
                 .line { background: var(--line-background); color: var(--line-foreground); border: 2px solid var(--line-border); border-radius: 5px; padding: 5px 2px; text-align: center; font-size: 18px; font-weight: 800; }
                 .destination strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
