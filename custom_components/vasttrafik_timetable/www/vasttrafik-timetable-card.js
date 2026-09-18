@@ -156,7 +156,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             l: 1.5,
             xl: 1.5,
         }[cardSize];
-        const fallbackChromeUnits = { xs: 2, s: 2, m: 2.5, l: 3, xl: 3 }[cardSize];
+        const fallbackChromeUnits = { xs: 1.25, s: 2, m: 2.5, l: 3, xl: 3 }[cardSize];
         const chromeHeight = this._chromeHeight || fallbackChromeUnits * gridUnit;
         const usableHeight = this._availableHeight - chromeHeight;
         const rows = Math.floor(usableHeight / (rowUnits * gridUnit));
