@@ -221,7 +221,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 :host { display: block; height: 100%; }
                 ha-card { background: var(--ha-card-background, var(--card-background-color, #fff)); color: var(--primary-text-color, #212121); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
                 ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px; }
-                .header { padding: 14px 16px 8px; font-size: 22px; font-weight: 700; }
+                .header { padding: 8px 16px 6px; font-size: 26px; font-weight: 700; }
                 .columns, .departure { display: grid; grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px 64px; gap: 8px; align-items: center; }
                 .columns { padding: 2px 16px 6px; color: var(--secondary-text-color, #5f6368); font-weight: 700; font-size: 12px; }
                 .columns span { white-space: nowrap; }
@@ -240,7 +240,9 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .page-progress { background: var(--secondary-background-color, var(--divider-color, #d7d9dc)); border: 2px solid var(--primary-text-color, #212121); border-radius: 8px; box-sizing: border-box; display: block; flex: 0 0 128px; height: 12px; overflow: hidden; width: 128px; }
                 .page-progress-fill { background: var(--primary-color, #03a9f4); display: block; height: 100%; transition: width 0.9s linear; width: 0; }
                 .dot { border: 2px solid var(--primary-text-color, #212121); border-radius: 50%; box-sizing: border-box; height: 10px; width: 10px; }
-                @media (max-width: 500px) { .columns, .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px 54px; gap: 5px; } .departure { padding: 8px 12px; } .columns { padding-left: 12px; padding-right: 12px; } .header { padding-left: 12px; } .destination strong { font-size: 14px; } ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px; } }
+                @media (max-width: 500px) { .columns, .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px 54px; gap: 5px; } .departure { padding: 8px 12px; } .columns { padding-left: 12px; padding-right: 12px; } .header { padding: 7px 12px 5px; font-size: 22px; } .destination strong { font-size: 14px; } ha-card.without-then .columns, ha-card.without-then .departure { grid-template-columns: 22px 42px minmax(0, 1fr) 54px 54px; } }
+                ha-card.xs .header { padding: 7px 12px 4px; font-size: 20px; }
+                ha-card.s .header { padding: 8px 12px 5px; font-size: 22px; }
                 ha-card.xs .columns, ha-card.xs .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 48px 44px; gap: 4px; }
                 ha-card.xs.without-then .columns, ha-card.xs.without-then .departure { grid-template-columns: 18px 34px minmax(0, 1fr) 48px 44px; }
                 ha-card.xs .departure { min-height: 42px; padding: 3px 8px; }
@@ -261,7 +263,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.s .platform { font-size: 14px; height: 26px; line-height: 26px; width: 26px; }
                 ha-card.m .departure { min-height: 70px; }
                 ha-card.m .mode ha-icon { --mdc-icon-size: 22px; }
-                ha-card.l .header { padding: 18px 20px 10px; font-size: 27px; }
+                ha-card.l .header { padding: 10px 20px 7px; font-size: 30px; }
                 ha-card.l .columns, ha-card.l .departure { grid-template-columns: 28px 58px minmax(0, 1fr) 76px 76px 76px; gap: 10px; }
                 ha-card.l.without-then .columns, ha-card.l.without-then .departure { grid-template-columns: 28px 58px minmax(0, 1fr) 76px 76px; }
                 ha-card.l .departure { min-height: 84px; padding: 13px 20px; }
@@ -272,7 +274,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.l .destination small, ha-card.l .time small, ha-card.l .time span { font-size: 13px; }
                 ha-card.l .time strong { font-size: 29px; }
                 ha-card.l .platform { font-size: 19px; height: 36px; line-height: 36px; width: 36px; }
-                ha-card.xl .header { padding: 20px 22px 12px; font-size: 30px; }
+                ha-card.xl .header { padding: 12px 22px 8px; font-size: 34px; }
                 ha-card.xl .columns, ha-card.xl .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px 84px; gap: 12px; }
                 ha-card.xl.without-then .columns, ha-card.xl.without-then .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px; }
                 ha-card.xl .departure { min-height: 84px; padding: 12px 22px; }
