@@ -98,7 +98,7 @@ labels.
 Card settings:
 
 - `size`: `xs`, `s`, `m`, `l`, or `xl`. These use approximately `0.75`, `1`,
-  `1.25`, `1.5`, and `2` Home Assistant grid rows per departure respectively.
+  `1.25`, `1.5`, and `1.5` Home Assistant grid rows per departure respectively.
   Legacy values `small`, `medium`, and `large` remain supported as aliases for
   `s`, `m`, and `l`.
 - `lines`: optional comma-separated line filter. It matches line numbers and

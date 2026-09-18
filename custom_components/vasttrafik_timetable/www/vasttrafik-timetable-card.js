@@ -154,9 +154,9 @@ class VasttrafikTimetableCard extends HTMLElement {
             s: 1,
             m: 1.25,
             l: 1.5,
-            xl: 2,
+            xl: 1.5,
         }[cardSize];
-        const fallbackChromeUnits = { xs: 2, s: 2, m: 2.5, l: 3, xl: 4 }[cardSize];
+        const fallbackChromeUnits = { xs: 2, s: 2, m: 2.5, l: 3, xl: 3 }[cardSize];
         const chromeHeight = this._chromeHeight || fallbackChromeUnits * gridUnit;
         const usableHeight = this._availableHeight - chromeHeight;
         const rows = Math.floor(usableHeight / (rowUnits * gridUnit));
@@ -275,7 +275,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.xl .header { padding: 20px 22px 12px; font-size: 30px; }
                 ha-card.xl .columns, ha-card.xl .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px 84px; gap: 12px; }
                 ha-card.xl.without-then .columns, ha-card.xl.without-then .departure { grid-template-columns: 30px 64px minmax(0, 1fr) 84px 84px; }
-                ha-card.xl .departure { min-height: 112px; padding: 16px 22px; }
+                ha-card.xl .departure { min-height: 84px; padding: 12px 22px; }
                 ha-card.xl .line { font-size: 24px; padding: 8px 4px; }
                 ha-card.xl .mode ha-icon { --mdc-icon-size: 30px; }
                 ha-card.xl .columns { font-size: 14px; }
@@ -403,7 +403,7 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="s" ${this._config?.size === "s" ? "selected" : ""}>S (1 row)</option>
                 <option value="m" ${["m", "medium"].includes(this._config?.size) ? "selected" : ""}>M (1.25 rows)</option>
                 <option value="l" ${this._config?.size === "l" ? "selected" : ""}>L (1.5 rows)</option>
-                <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (2 rows)</option>
+                <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (1.5 rows)</option>
             </select></label>
         `;
         for (const id of ["entity", "lines", "show_departure_after", "page_seconds", "size"]) {
