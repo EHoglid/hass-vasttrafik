@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from aiohttp import BasicAuth, ClientError, ClientSession
+from aiohttp import ClientError, ClientSession
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -133,8 +133,11 @@ class VasttrafikClient:
         try:
             async with self._session.post(
                 TOKEN_URL,
-                auth=BasicAuth(self._client_id, self._client_secret),
-                data={"grant_type": "client_credentials"},
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": self._client_id,
+                    "client_secret": self._client_secret,
+                },
             ) as response:
                 if response.status in (400, 401, 403):
                     _LOGGER.warning(

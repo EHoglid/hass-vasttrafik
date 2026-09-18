@@ -87,6 +87,52 @@ def test_parse_departures_skips_invalid_timestamps() -> None:
     assert departures[0].line == "10"
 
 
+def test_authenticate_posts_oauth_form_credentials() -> None:
+    """Send Västtrafik client credentials in the token request body."""
+
+    class FakeResponse:
+        status = 200
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, traceback):
+            return False
+
+        def raise_for_status(self) -> None:
+            return None
+
+        async def json(self) -> dict:
+            return {"access_token": "token", "expires_in": 3600}
+
+    class FakeSession:
+        def __init__(self) -> None:
+            self.post_kwargs = None
+
+        def post(self, *args, **kwargs):
+            self.post_kwargs = kwargs
+            return FakeResponse()
+
+    async def run_test() -> dict:
+        session = FakeSession()
+        client = API.VasttrafikClient(session, "my-id", "my-secret")
+
+        await client.async_authenticate()
+
+        assert session.post_kwargs is not None
+        return session.post_kwargs
+
+    kwargs = _run_async(run_test())
+
+    assert kwargs == {
+        "data": {
+            "grant_type": "client_credentials",
+            "client_id": "my-id",
+            "client_secret": "my-secret",
+        }
+    }
+
+
 def test_get_departures_follows_pagination() -> None:
     """Fetch every page returned for the one-hour departure window."""
 
