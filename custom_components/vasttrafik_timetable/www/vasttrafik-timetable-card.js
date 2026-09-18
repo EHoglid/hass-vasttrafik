@@ -455,6 +455,9 @@ if (!customElements.get("vasttrafik-timetable-card-editor")) {
     customElements.define("vasttrafik-timetable-card-editor", VasttrafikTimetableCardEditor);
 }
 
+window.VasttrafikTimetableCardImplementation = VasttrafikTimetableCard;
+window.VasttrafikTimetableCardEditorImplementation = VasttrafikTimetableCardEditor;
+
 window.customCards = window.customCards || [];
 window.customCards.push({
     type: "vasttrafik-timetable-card",

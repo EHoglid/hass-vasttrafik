@@ -27,7 +27,8 @@ _LOGGER = logging.getLogger(__name__)
 
 type VasttrafikConfigEntry = ConfigEntry[VasttrafikCoordinator]
 
-CARD_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
+CARD_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card-loader.js"
+CARD_IMPLEMENTATION_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
 DATA_FRONTEND_URL = "vasttrafik_timetable_frontend_url"
 DATA_STATIC_PATH_REGISTERED = "vasttrafik_timetable_static_path_registered"
 DATA_LOVELACE_RESOURCE_URL = "vasttrafik_timetable_lovelace_resource_url"
@@ -100,8 +101,12 @@ async def _async_register_lovelace_resource(
 
 async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     """Register the built-in Västtrafik timetable dashboard card."""
-    card_file = Path(__file__).parent / "www" / "vasttrafik-timetable-card.js"
-    cache_bust = sha256(card_file.read_bytes()).hexdigest()[:12]
+    card_dir = Path(__file__).parent / "www"
+    card_file = card_dir / "vasttrafik-timetable-card-loader.js"
+    implementation_file = card_dir / "vasttrafik-timetable-card.js"
+    cache_bust = sha256(
+        card_file.read_bytes() + implementation_file.read_bytes()
+    ).hexdigest()[:12]
     card_url = f"{CARD_PATH}?v={cache_bust}"
     if not hass.data.get(DATA_STATIC_PATH_REGISTERED):
         await hass.http.async_register_static_paths(
@@ -110,7 +115,12 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
                     CARD_PATH,
                     str(card_file),
                     cache_headers=True,
-                )
+                ),
+                StaticPathConfig(
+                    CARD_IMPLEMENTATION_PATH,
+                    str(implementation_file),
+                    cache_headers=True,
+                ),
             ]
         )
         hass.data[DATA_STATIC_PATH_REGISTERED] = True
