@@ -6,9 +6,8 @@
         "vasttrafik",
         "Västtrafik"
     ],
+    "python.envFile": "${workspaceFolder}/.vscode/test.env",
     "python.testing.pytestArgs": [
-        "-p",
-        "no:homeassistant",
         "tests"
     ],
     "python.testing.pytestEnabled": true,
