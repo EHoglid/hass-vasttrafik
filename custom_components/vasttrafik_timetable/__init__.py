@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import logging
+from hashlib import sha256
 from pathlib import Path
 from typing import cast
 
-from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.frontend import (
+    add_extra_js_url,
+    remove_extra_js_url,
+)
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.lovelace import resources as lovelace_resources
 from homeassistant.components.lovelace.const import LOVELACE_DATA, MODE_STORAGE
@@ -83,6 +87,8 @@ async def _async_register_lovelace_resource(
                 {"res_type": "module", CONF_URL: card_url}
             )
 
+        _LOGGER.info("Registered Lovelace module resource %s", card_url)
+
     for old_item in matching_items:
         if old_item["id"] == kept_item["id"]:
             continue
@@ -95,11 +101,7 @@ async def _async_register_lovelace_resource(
 async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     """Register the built-in Västtrafik timetable dashboard card."""
     card_file = Path(__file__).parent / "www" / "vasttrafik-timetable-card.js"
-    # Bust the browser cache only when the file actually changes, while still
-    # allowing it to be cached (cache_headers=False forced an uncached refetch
-    # on every load, which raced with Lovelace and caused intermittent
-    # "Custom element doesn't exist" errors).
-    cache_bust = int(card_file.stat().st_mtime)
+    cache_bust = sha256(card_file.read_bytes()).hexdigest()[:12]
     card_url = f"{CARD_PATH}?v={cache_bust}"
     if not hass.data.get(DATA_STATIC_PATH_REGISTERED):
         await hass.http.async_register_static_paths(
@@ -114,6 +116,8 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
         hass.data[DATA_STATIC_PATH_REGISTERED] = True
 
     if hass.data.get(DATA_FRONTEND_URL) != card_url:
+        if old_url := hass.data.get(DATA_FRONTEND_URL):
+            remove_extra_js_url(hass, old_url)
         add_extra_js_url(hass, card_url)
         hass.data[DATA_FRONTEND_URL] = card_url
 
