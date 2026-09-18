@@ -23,17 +23,19 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
         return
 
     card_path = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
-    card_url = f"{card_path}?v=4"
+    card_file = Path(__file__).parent / "www" / "vasttrafik-timetable-card.js"
+    # Bust the browser cache only when the file actually changes, while still
+    # allowing it to be cached (cache_headers=False forced an uncached refetch
+    # on every load, which raced with Lovelace and caused intermittent
+    # "Custom element doesn't exist" errors).
+    cache_bust = int(card_file.stat().st_mtime)
+    card_url = f"{card_path}?v={cache_bust}"
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
                 card_path,
-                str(
-                    Path(__file__).parent
-                    / "www"
-                    / "vasttrafik-timetable-card.js"
-                ),
-                cache_headers=False,
+                str(card_file),
+                cache_headers=True,
             )
         ]
     )
