@@ -375,6 +375,10 @@ class VasttrafikTimetableCard extends HTMLElement {
     }
 }
 
+if (!customElements.get("vasttrafik-timetable-card")) {
+    customElements.define("vasttrafik-timetable-card", VasttrafikTimetableCard);
+}
+
 class VasttrafikTimetableCardEditor extends HTMLElement {
     setConfig(config) {
         this._config = config;
@@ -441,9 +445,6 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
     }
 }
 
-if (!customElements.get("vasttrafik-timetable-card")) {
-    customElements.define("vasttrafik-timetable-card", VasttrafikTimetableCard);
-}
 if (!customElements.get("vasttrafik-timetale-card")) {
     customElements.define(
         "vasttrafik-timetale-card",
