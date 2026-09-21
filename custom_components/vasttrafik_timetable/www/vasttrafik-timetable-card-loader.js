@@ -1,15 +1,17 @@
 window.__vasttrafikTimetableCardLoaded = true;
 
-const implementationUrl = new URL(
-    "./vasttrafik-timetable-card.js",
-    import.meta.url,
-);
-implementationUrl.search = new URL(import.meta.url).search;
-
 let implementationPromise;
 
+function implementationUrl() {
+    const url = new URL("./vasttrafik-timetable-card.js", import.meta.url);
+    url.search = new URL(import.meta.url).search;
+    return url.href;
+}
+
 function loadImplementation() {
-    implementationPromise ||= import(implementationUrl.href);
+    if (!implementationPromise) {
+        implementationPromise = import(implementationUrl());
+    }
     return implementationPromise;
 }
 
@@ -112,6 +114,19 @@ class VasttrafikTimetableCardLoader extends HTMLElement {
     }
 }
 
+if (!customElements.get("vasttrafik-timetable-card")) {
+    customElements.define(
+        "vasttrafik-timetable-card",
+        VasttrafikTimetableCardLoader,
+    );
+}
+if (!customElements.get("vasttrafik-timetale-card")) {
+    customElements.define(
+        "vasttrafik-timetale-card",
+        class extends VasttrafikTimetableCardLoader {},
+    );
+}
+
 class VasttrafikTimetableCardEditorLoader extends HTMLElement {
     constructor() {
         super();
@@ -173,18 +188,6 @@ class VasttrafikTimetableCardEditorLoader extends HTMLElement {
     }
 }
 
-if (!customElements.get("vasttrafik-timetable-card")) {
-    customElements.define(
-        "vasttrafik-timetable-card",
-        VasttrafikTimetableCardLoader,
-    );
-}
-if (!customElements.get("vasttrafik-timetale-card")) {
-    customElements.define(
-        "vasttrafik-timetale-card",
-        class extends VasttrafikTimetableCardLoader { },
-    );
-}
 if (!customElements.get("vasttrafik-timetable-card-editor")) {
     customElements.define(
         "vasttrafik-timetable-card-editor",
