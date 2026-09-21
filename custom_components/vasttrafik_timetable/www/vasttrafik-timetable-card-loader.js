@@ -110,7 +110,7 @@ if (!customElements.get("vasttrafik-timetable-card")) {
 if (!customElements.get("vasttrafik-timetale-card")) {
     customElements.define(
         "vasttrafik-timetale-card",
-        class extends customElements.get("vasttrafik-timetable-card") {},
+        class extends customElements.get("vasttrafik-timetable-card") { },
     );
 }
 

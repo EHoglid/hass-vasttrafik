@@ -1,11 +1,12 @@
 {
   "domain": "vasttrafik_timetable",
   "name": "Västtrafik Journey Planner",
-  "codeowners": [],
+  "codeowners": ["@EHoglid"],
   "dependencies": ["frontend", "lovelace"],
   "config_flow": true,
-  "documentation": "https://developer.vasttrafik.se/",
+  "documentation": "https://ehoglid.github.io/hass-vasttrafik/",
   "integration_type": "service",
+  "issue_tracker": "https://github.com/EHoglid/hass-vasttrafik/issues",
   "iot_class": "cloud_polling",
   "requirements": [],
   "version": "0.1.0"
