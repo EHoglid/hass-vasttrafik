@@ -7,10 +7,6 @@ from hashlib import sha256
 from pathlib import Path
 from typing import cast
 
-from homeassistant.components.frontend import (
-    add_extra_js_url,
-    remove_extra_js_url,
-)
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.lovelace import resources as lovelace_resources
 from homeassistant.components.lovelace.const import LOVELACE_DATA, MODE_STORAGE
@@ -27,9 +23,8 @@ _LOGGER = logging.getLogger(__name__)
 
 type VasttrafikConfigEntry = ConfigEntry[VasttrafikCoordinator]
 
-CARD_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card-loader.js"
-CARD_IMPLEMENTATION_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
-DATA_FRONTEND_URL = "vasttrafik_timetable_frontend_url"
+CARD_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card.js"
+CARD_LOADER_PATH = "/vasttrafik_timetable/vasttrafik-timetable-card-loader.js"
 DATA_STATIC_PATH_REGISTERED = "vasttrafik_timetable_static_path_registered"
 DATA_LOVELACE_RESOURCE_URL = "vasttrafik_timetable_lovelace_resource_url"
 
@@ -37,7 +32,7 @@ DATA_LOVELACE_RESOURCE_URL = "vasttrafik_timetable_lovelace_resource_url"
 async def _async_register_lovelace_resource(
     hass: HomeAssistant, card_url: str
 ) -> bool:
-    """Register the card as a Lovelace module resource."""
+    """Register the card as a Lovelace JavaScript resource."""
     if hass.data.get(DATA_LOVELACE_RESOURCE_URL) == card_url:
         return True
 
@@ -69,7 +64,9 @@ async def _async_register_lovelace_resource(
     matching_items = [
         item
         for item in items
-        if str(item.get(CONF_URL, "")).startswith(CARD_PATH)
+        if str(item.get(CONF_URL, "")).startswith(
+            (CARD_PATH, CARD_LOADER_PATH)
+        )
     ]
     current_item = next(
         (item for item in matching_items if item.get(CONF_URL) == card_url),
@@ -81,14 +78,14 @@ async def _async_register_lovelace_resource(
         if matching_items:
             kept_item = await resources.async_update_item(
                 matching_items[0]["id"],
-                {"res_type": "module", CONF_URL: card_url},
+                {"res_type": "js", CONF_URL: card_url},
             )
         else:
             kept_item = await resources.async_create_item(
-                {"res_type": "module", CONF_URL: card_url}
+                {"res_type": "js", CONF_URL: card_url}
             )
 
-        _LOGGER.info("Registered Lovelace module resource %s", card_url)
+        _LOGGER.info("Registered Lovelace JavaScript resource %s", card_url)
 
     for old_item in matching_items:
         if old_item["id"] == kept_item["id"]:
@@ -102,11 +99,9 @@ async def _async_register_lovelace_resource(
 async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     """Register the built-in Västtrafik timetable dashboard card."""
     card_dir = Path(__file__).parent / "www"
-    card_file = card_dir / "vasttrafik-timetable-card-loader.js"
-    implementation_file = card_dir / "vasttrafik-timetable-card.js"
-    cache_bust = sha256(
-        card_file.read_bytes() + implementation_file.read_bytes()
-    ).hexdigest()[:12]
+    card_file = card_dir / "vasttrafik-timetable-card.js"
+    loader_file = card_dir / "vasttrafik-timetable-card-loader.js"
+    cache_bust = sha256(card_file.read_bytes()).hexdigest()[:12]
     card_url = f"{CARD_PATH}?v={cache_bust}"
     if not hass.data.get(DATA_STATIC_PATH_REGISTERED):
         await hass.http.async_register_static_paths(
@@ -117,19 +112,13 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
                     cache_headers=True,
                 ),
                 StaticPathConfig(
-                    CARD_IMPLEMENTATION_PATH,
-                    str(implementation_file),
+                    CARD_LOADER_PATH,
+                    str(loader_file),
                     cache_headers=True,
                 ),
             ]
         )
         hass.data[DATA_STATIC_PATH_REGISTERED] = True
-
-    if hass.data.get(DATA_FRONTEND_URL) != card_url:
-        if old_url := hass.data.get(DATA_FRONTEND_URL):
-            remove_extra_js_url(hass, old_url)
-        add_extra_js_url(hass, card_url)
-        hass.data[DATA_FRONTEND_URL] = card_url
 
     await _async_register_lovelace_resource(hass, card_url)
     _LOGGER.debug("Registered dashboard card resource at %s", card_url)
