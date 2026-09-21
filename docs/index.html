@@ -58,7 +58,9 @@
             purpose-built Lovelace card.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#install">Install the integration</a>
+            <a class="button primary" href="#install"
+              >Install the integration</a
+            >
             <a
               class="button secondary"
               href="https://github.com/EHoglid/hass-vasttrafik"
@@ -71,36 +73,53 @@
             ><span>Open source</span>
           </div>
         </div>
-        <div class="board-preview" aria-label="Example departure board showing Lindholmen departures">
-          <div class="board-top"><span>Lindholmen</span><time>14:32</time></div>
+        <div
+          class="board-preview"
+          aria-label="Example departure board showing Lindholmen departures"
+        >
           <div class="board-head">
-            <span></span><span>Line</span><span>Destination</span
-            ><span>Next</span><span>Platform</span>
+            <span class="stop-title">Lindholmen</span><span>Next</span
+            ><span>Then</span><span>Platform</span>
           </div>
           <div class="board-row">
-            <span class="mode bus">BUS</span><b class="line yellow">19</b
+            <span class="mode" aria-label="Bus"
+              ><span class="mode-icon bus"></span></span
+            ><b class="line yellow">19</b
             ><strong>Bäckebol <small>via Backa</small></strong
-            ><b>3 <small>min</small></b
+            ><b>3 <small>14:35</small></b
+            ><b>18 <small>14:50</small></b
             ><i>C</i>
           </div>
           <div class="board-row">
-            <span class="mode tram">TRAM</span><b class="line aqua">12</b
-            ><strong>Mölndal</strong><b>7 <small>min</small></b
+            <span class="mode" aria-label="Tram"
+              ><span class="mode-icon tram"></span></span
+            ><b class="line aqua">12</b><strong>Mölndal</strong
+            ><b>7 <small>14:39</small></b
+            ><b>22 <small>14:54</small></b
             ><i>A</i>
           </div>
           <div class="board-row">
-            <span class="mode tram">TRAM</span><b class="line green">10</b
-            ><strong>Guldheden</strong><b>12 <small>min</small></b
+            <span class="mode" aria-label="Tram"
+              ><span class="mode-icon tram"></span></span
+            ><b class="line green">10</b><strong>Guldheden</strong
+            ><b>12 <small>14:44</small></b
+            ><b>27 <small>14:59</small></b
             ><i>A</i>
           </div>
           <div class="board-row">
-            <span class="mode bus">BUS</span><b class="line magenta">X1</b
-            ><strong>Partille centrum</strong><b>16 <small>min</small></b
+            <span class="mode" aria-label="Bus"
+              ><span class="mode-icon bus"></span></span
+            ><b class="line magenta">X1</b><strong>Partille centrum</strong
+            ><b>16 <small>14:48</small></b
+            ><b>31 <small>15:03</small></b
             ><i>D</i>
           </div>
-          <div class="board-footer" aria-hidden="true">
-            <span class="active-page"></span><span class="page-dot"></span
-            ><span class="page-dot"></span><span class="page-dot"></span>
+          <div class="board-footer" aria-label="Page 1 of 2">
+            <span class="page-controls"
+              ><span class="page-label">Page 1 / 2</span
+              ><span class="page-progress"><span></span></span
+              ><span class="page-dot"></span
+            ></span>
           </div>
         </div>
       </section>
@@ -296,7 +315,9 @@ page_seconds: 5</code></pre>
       <div class="shell footer-inner">
         <span>Västtrafik Journey Planner</span
         ><span>Made for Home Assistant</span
-        ><a href="https://github.com/EHoglid/hass-vasttrafik" rel="noopener noreferrer"
+        ><a
+          href="https://github.com/EHoglid/hass-vasttrafik"
+          rel="noopener noreferrer"
           >EHoglid/hass-vasttrafik</a
         >
       </div>

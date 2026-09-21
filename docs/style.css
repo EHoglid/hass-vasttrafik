@@ -308,7 +308,7 @@ button:focus-visible {
 .board-head,
 .board-row {
   display: grid;
-  grid-template-columns: 48px 43px minmax(0, 1fr) 50px 34px;
+  grid-template-columns: 24px 48px minmax(0, 1fr) 64px 64px 64px;
   gap: 8px;
   align-items: center;
 }
@@ -323,8 +323,16 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
+.board-head .stop-title {
+  grid-column: 1 / 4;
+  color: var(--board-text);
+  font-size: 22px;
+  line-height: 1;
+  text-transform: none;
+}
+
 .board-row {
-  min-height: 64px;
+  min-height: 70px;
   border-bottom: 1px solid var(--board-border);
   font-family: Arial, sans-serif;
   font-size: 13px;
@@ -356,17 +364,76 @@ button:focus-visible {
 }
 
 .mode {
-  color: #b9c5c7;
-  font-size: 8px;
-  font-weight: 800;
+  color: var(--board-muted);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.mode-icon {
+  position: relative;
+  display: block;
+  width: 19px;
+  height: 19px;
+  border: 2px solid currentColor;
+}
+
+.mode-icon.bus {
+  border-radius: 4px 4px 2px 2px;
+}
+
+.mode-icon.bus::before {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  left: 2px;
+  height: 4px;
+  background: currentColor;
+  content: "";
+}
+
+.mode-icon.bus::after {
+  position: absolute;
+  right: 1px;
+  bottom: -5px;
+  left: 1px;
+  height: 4px;
+  border-right: 3px solid currentColor;
+  border-left: 3px solid currentColor;
+  content: "";
+}
+
+.mode-icon.tram {
+  border-radius: 6px 6px 2px 2px;
+}
+
+.mode-icon.tram::before {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  left: 2px;
+  height: 4px;
+  background: currentColor;
+  content: "";
+}
+
+.mode-icon.tram::after {
+  position: absolute;
+  top: -7px;
+  left: 7px;
+  width: 2px;
+  height: 6px;
+  background: currentColor;
+  content: "";
 }
 
 .line {
   display: grid;
   place-items: center;
   width: 40px;
-  height: 34px;
-  border-radius: 3px;
+  height: 36px;
+  border: 2px solid transparent;
+  border-radius: 5px;
   font-size: 16px;
   font-weight: 900;
 }
@@ -394,25 +461,49 @@ button:focus-visible {
 
 .board-footer {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 7px;
-  padding-top: 18px;
+  padding-top: 14px;
+  color: var(--board-muted);
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
 }
 
-.active-page {
+.page-label {
+  white-space: nowrap;
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 7px;
+}
+
+.page-progress {
   display: block;
-  width: 76px;
-  height: 9px;
-  background: var(--board-text);
-  border-radius: 999px;
+  width: 88px;
+  height: 10px;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid var(--board-text);
+  border-radius: 8px;
+}
+
+.page-progress span {
+  display: block;
+  width: 54%;
+  height: 100%;
+  background: var(--brand-accent);
+  border-radius: 5px;
 }
 
 .page-dot {
   display: block;
-  width: 8px;
-  height: 8px;
-  background: rgba(23, 35, 43, 0.3);
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--board-text);
   border-radius: 50%;
 }
 
