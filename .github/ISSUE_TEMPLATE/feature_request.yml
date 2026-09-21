@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest an improvement for the Västtrafik Timetable integration
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to improve?
+      description: Describe the workflow, display, or integration behavior you want to improve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Suggested solution
+      description: Describe how you would like it to work.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches or workarounds you tried.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, examples from Västtrafik data, or card mockups.

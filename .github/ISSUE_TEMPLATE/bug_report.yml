@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a problem with the Västtrafik Timetable integration
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Please avoid posting client IDs, client secrets, tokens, or private Home Assistant URLs.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Configure ...
+        3. Refresh ...
+        4. See error ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Integration version
+      description: The version from HACS or manifest.json.
+      placeholder: "0.1.1"
+    validations:
+      required: true
+
+  - type: input
+    id: home_assistant_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.9.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation method
+      options:
+        - HACS
+        - Manual custom_components copy
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste relevant Home Assistant logs or browser console errors. Redact secrets.
+      render: text
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: If possible, attach diagnostics from Home Assistant Devices & Services. Redact anything sensitive.
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Screenshots, dashboard YAML/card config, stop name, or anything else that helps.
