@@ -3,9 +3,25 @@
   "tasks": [
     {
       "label": "HA: Compose Up",
+      "detail": "Start (or reuse) the Home Assistant dev container and wait for its healthcheck.",
       "type": "shell",
-      "command": "docker compose up -d",
+      "command": "docker compose up -d --wait",
       "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "HA: Wait Ready",
+      "detail": "Waits for the debugpy listen line in the container log. Never connects to 5678, so it cannot steal the debug session slot or falsely report 'down' while a session is attached.",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\.vscode\\wait-debugpy-ready.ps1"
+      ],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "shared" }
     },
@@ -13,13 +29,30 @@
       "label": "HA: Open Window",
       "type": "shell",
       "command": "Start-Process 'http://localhost:8123'",
-      "options": { "shell": { "executable": "pwsh", "args": ["-NoProfile", "-Command"] } },
+      "options": { "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] } },
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent", "panel": "shared" }
+    },
+    {
+      "label": "HA: Restart",
+      "detail": "Restart HA to pick up Python changes and reset the debugpy session.",
+      "type": "shell",
+      "command": "docker restart vasttrafik-ha",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "HA: Up + Wait + Open",
+      "dependsOrder": "sequence",
+      "dependsOn": ["HA: Compose Up", "HA: Wait Ready", "HA: Open Window"],
       "problemMatcher": []
     },
     {
-      "label": "HA: Up + Open",
+      "label": "HA: Restart + Wait",
+      "detail": "Restart and wait until ready. Run before re-attaching the debugger.",
       "dependsOrder": "sequence",
-      "dependsOn": ["HA: Compose Up", "HA: Open Window"],
+      "dependsOn": ["HA: Restart", "HA: Wait Ready"],
       "problemMatcher": []
     }
   ]

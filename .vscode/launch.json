@@ -2,21 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Home Assistant (Docker debugpy)",
+      "name": "HA: Start + Attach",
       "type": "debugpy",
       "request": "attach",
-      "preLaunchTask": "HA: Up + Open",
-      "connect": {
-        "host": "localhost",
-        "port": 5678
-      },
+      "preLaunchTask": "HA: Up + Wait + Open",
+      "connect": { "host": "localhost", "port": 5678 },
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/custom_components/vasttrafik_timetable",
           "remoteRoot": "/config/custom_components/vasttrafik_timetable"
         }
       ],
-      "justMyCode": false
+      "justMyCode": false,
+      "redirectOutput": false
+    },
+    {
+      "name": "HA: Restart + Attach",
+      "type": "debugpy",
+      "request": "attach",
+      "preLaunchTask": "HA: Restart + Wait",
+      "connect": { "host": "localhost", "port": 5678 },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/custom_components/vasttrafik_timetable",
+          "remoteRoot": "/config/custom_components/vasttrafik_timetable"
+        }
+      ],
+      "justMyCode": false,
+      "redirectOutput": false
     }
   ]
 }
