@@ -77,6 +77,10 @@ def _validate_query_options(
     user_input: dict[str, Any], errors: dict[str, str]
 ) -> None:
     """Validate departure query options in-place."""
+    user_input.setdefault(CONF_START_DATE_TIME, "")
+    user_input.setdefault(CONF_PLATFORMS, "")
+    user_input.setdefault(CONF_DIRECTION_GID, "")
+    user_input.setdefault(CONF_INCLUDE_OCCUPANCY, False)
     try:
         user_input[CONF_START_DATE_TIME] = (
             VasttrafikTimetableConfigFlow._validate_datetime(
