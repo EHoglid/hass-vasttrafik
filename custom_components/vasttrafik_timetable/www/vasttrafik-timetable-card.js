@@ -247,7 +247,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 .destination strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                 small, .time span { display: block; color: var(--secondary-text-color, #5f6368); font-size: 11px; }
                 .time { text-align: center; } .time strong { font-size: 22px; } .time.missing { color: var(--disabled-text-color, #9e9e9e); }
-                .time.cancelled strong { color: var(--error-color, #db4437); font-size: 13px; text-transform: uppercase; }
+                .time.cancelled strong { color: var(--error-color, #db4437); font-size: 11px; text-transform: uppercase; }
                 .time-main { align-items: center; display: flex; gap: 6px; justify-content: center; }
                 .time-main ha-icon { color: var(--secondary-text-color, #5f6368); --mdc-icon-size: 18px; }
                 .platform { background: var(--primary-text-color, #212121); border-radius: 50%; color: var(--ha-card-background, var(--card-background-color, #fff)); font-size: 16px; font-weight: 800; height: 30px; justify-self: center; line-height: 30px; text-align: center; width: 30px; }
@@ -270,6 +270,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.xs .mode ha-icon { --mdc-icon-size: 16px; }
                 ha-card.xs .destination strong { font-size: 12px; }
                 ha-card.xs .time strong { font-size: 15px; }
+                ha-card.xs .time.cancelled strong { font-size: 10px; }
                 ha-card.xs .time-main ha-icon { --mdc-icon-size: 15px; }
                 ha-card.xs .time small, ha-card.xs .time span { display: none; }
                 ha-card.xs .platform { font-size: 13px; height: 24px; line-height: 24px; width: 24px; }
@@ -280,6 +281,7 @@ class VasttrafikTimetableCard extends HTMLElement {
                 ha-card.s .mode ha-icon { --mdc-icon-size: 18px; }
                 ha-card.s .destination strong { font-size: 13px; }
                 ha-card.s .time strong { font-size: 17px; }
+                ha-card.s .time.cancelled strong { font-size: 10px; }
                 ha-card.s .time-main ha-icon { --mdc-icon-size: 16px; }
                 ha-card.s .time small, ha-card.s .time span { display: none; }
                 ha-card.s .platform { font-size: 14px; height: 26px; line-height: 26px; width: 26px; }

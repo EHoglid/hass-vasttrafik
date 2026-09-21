@@ -2,8 +2,123 @@ window.__vasttrafikTimetableCardLoaded = true;
 
 let implementationPromise;
 
+if (!customElements.get("vasttrafik-timetable-card")) {
+    customElements.define(
+        "vasttrafik-timetable-card",
+        class VasttrafikTimetableCardLoader extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: "open" });
+                this._config = undefined;
+                this._hass = undefined;
+                this._element = undefined;
+                this._loading = false;
+                renderPlaceholder(this.shadowRoot);
+            }
+
+            setConfig(config) {
+                this._config = config;
+                this._element?.setConfig(config);
+                this._load();
+            }
+
+            set hass(hass) {
+                this._hass = hass;
+                if (this._element) {
+                    this._element.hass = hass;
+                }
+                this._load();
+            }
+
+            connectedCallback() {
+                this._load();
+            }
+
+            disconnectedCallback() {
+                this._element?.remove();
+                this._element = undefined;
+            }
+
+            getCardSize() {
+                return this._element?.getCardSize?.() ?? 6;
+            }
+
+            getGridOptions() {
+                return this._element?.getGridOptions?.() ?? {
+                    rows: 6,
+                    columns: 12,
+                    min_rows: 3,
+                    min_columns: 6,
+                };
+            }
+
+            async _load() {
+                if (this._loading || this._element) {
+                    return;
+                }
+
+                this._loading = true;
+                try {
+                    await loadImplementation();
+                    const implementationClass =
+                        window.VasttrafikTimetableCardImplementation;
+                    if (!implementationClass) {
+                        throw new Error(
+                            "Västtrafik timetable implementation did not load",
+                        );
+                    }
+                    const tag = "vasttrafik-timetable-card-implementation";
+                    if (!customElements.get(tag)) {
+                        customElements.define(tag, implementationClass);
+                    }
+                    const element = document.createElement(tag);
+                    this.shadowRoot.replaceChildren(element);
+                    this._element = element;
+                    if (this._config !== undefined) {
+                        element.setConfig(this._config);
+                    }
+                    if (this._hass !== undefined) {
+                        element.hass = this._hass;
+                    }
+                } catch (error) {
+                    console.error(
+                        "Failed to load Västtrafik timetable card",
+                        error,
+                    );
+                    renderPlaceholder(
+                        this.shadowRoot,
+                        "Unable to load Västtrafik timetable.",
+                    );
+                } finally {
+                    this._loading = false;
+                }
+            }
+
+            static getConfigElement() {
+                return document.createElement(
+                    "vasttrafik-timetable-card-editor",
+                );
+            }
+
+            static getStubConfig() {
+                return {};
+            }
+        },
+    );
+}
+
+if (!customElements.get("vasttrafik-timetale-card")) {
+    customElements.define(
+        "vasttrafik-timetale-card",
+        class extends customElements.get("vasttrafik-timetable-card") {},
+    );
+}
+
 function implementationUrl() {
-    const url = new URL("./vasttrafik-timetable-card.js", import.meta.url);
+    const url = new URL(
+        "/vasttrafik_timetable/vasttrafik-timetable-card.js",
+        window.location.origin,
+    );
     url.search = new URL(import.meta.url).search;
     return url.href;
 }
@@ -23,108 +138,6 @@ function renderPlaceholder(root, message = "Loading Västtrafik timetable...") {
             </div>
         </ha-card>
     `;
-}
-
-class VasttrafikTimetableCardLoader extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
-        this._config = undefined;
-        this._hass = undefined;
-        this._element = undefined;
-        this._loading = false;
-        renderPlaceholder(this.shadowRoot);
-    }
-
-    setConfig(config) {
-        this._config = config;
-        this._element?.setConfig(config);
-        this._load();
-    }
-
-    set hass(hass) {
-        this._hass = hass;
-        if (this._element) {
-            this._element.hass = hass;
-        }
-        this._load();
-    }
-
-    connectedCallback() {
-        this._load();
-    }
-
-    disconnectedCallback() {
-        this._element?.remove();
-        this._element = undefined;
-    }
-
-    getCardSize() {
-        return this._element?.getCardSize?.() ?? 6;
-    }
-
-    getGridOptions() {
-        return this._element?.getGridOptions?.() ?? {
-            rows: 6,
-            columns: 12,
-            min_rows: 3,
-            min_columns: 6,
-        };
-    }
-
-    async _load() {
-        if (this._loading || this._element) {
-            return;
-        }
-
-        this._loading = true;
-        try {
-            await loadImplementation();
-            const implementationClass = window.VasttrafikTimetableCardImplementation;
-            if (!implementationClass) {
-                throw new Error("Västtrafik timetable implementation did not load");
-            }
-            const tag = "vasttrafik-timetable-card-implementation";
-            if (!customElements.get(tag)) {
-                customElements.define(tag, implementationClass);
-            }
-            const element = document.createElement(tag);
-            this.shadowRoot.replaceChildren(element);
-            this._element = element;
-            if (this._config !== undefined) {
-                element.setConfig(this._config);
-            }
-            if (this._hass !== undefined) {
-                element.hass = this._hass;
-            }
-        } catch (error) {
-            console.error("Failed to load Västtrafik timetable card", error);
-            renderPlaceholder(this.shadowRoot, "Unable to load Västtrafik timetable.");
-        } finally {
-            this._loading = false;
-        }
-    }
-
-    static getConfigElement() {
-        return document.createElement("vasttrafik-timetable-card-editor");
-    }
-
-    static getStubConfig() {
-        return {};
-    }
-}
-
-if (!customElements.get("vasttrafik-timetable-card")) {
-    customElements.define(
-        "vasttrafik-timetable-card",
-        VasttrafikTimetableCardLoader,
-    );
-}
-if (!customElements.get("vasttrafik-timetale-card")) {
-    customElements.define(
-        "vasttrafik-timetale-card",
-        class extends VasttrafikTimetableCardLoader {},
-    );
 }
 
 class VasttrafikTimetableCardEditorLoader extends HTMLElement {
@@ -162,7 +175,8 @@ class VasttrafikTimetableCardEditorLoader extends HTMLElement {
         this._loading = true;
         try {
             await loadImplementation();
-            const editorClass = window.VasttrafikTimetableCardEditorImplementation;
+            const editorClass =
+                window.VasttrafikTimetableCardEditorImplementation;
             if (!editorClass) {
                 throw new Error("Västtrafik timetable editor did not load");
             }
