@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "HA: Compose Up",
+      "type": "shell",
+      "command": "docker compose up -d",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "HA: Open Window",
+      "type": "shell",
+      "command": "Start-Process 'http://localhost:8123'",
+      "options": { "shell": { "executable": "pwsh", "args": ["-NoProfile", "-Command"] } },
+      "problemMatcher": []
+    },
+    {
+      "label": "HA: Up + Open",
+      "dependsOrder": "sequence",
+      "dependsOn": ["HA: Compose Up", "HA: Open Window"],
+      "problemMatcher": []
+    }
+  ]
+}

@@ -7,3 +7,9 @@ __pycache__/
 htmlcov/
 .ha_storage/
 .ruff_cache/
+
+# Home Assistant dev container runtime state (keep only configuration.yaml)
+dev-config/*
+!dev-config/configuration.yaml
+# The integration is mounted read-through; ignore it if HA copies it in.
+dev-config/custom_components/

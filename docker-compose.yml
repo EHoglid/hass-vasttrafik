@@ -1,0 +1,14 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: vasttrafik-ha
+    restart: unless-stopped
+    ports:
+      - "8123:8123" # Home Assistant UI
+      - "5678:5678" # debugpy remote debugger
+    volumes:
+      - ./dev-config:/config
+      # Live-mount the integration so edits show up on HA restart (no rebuild).
+      - ./custom_components/vasttrafik_timetable:/config/custom_components/vasttrafik_timetable
+    environment:
+      - TZ=Europe/Stockholm

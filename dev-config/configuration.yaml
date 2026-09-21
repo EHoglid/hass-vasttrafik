@@ -1,0 +1,28 @@
+# Minimal Home Assistant config for local development / debugging.
+default_config:
+
+# Skip the login screen when debugging: HA sees the Docker gateway as the client
+# source IP (172.x here), so trust the Docker bridge range + loopback. With a single
+# user, allow_bypass_login logs you straight in. Keep the homeassistant provider as a
+# fallback so password login still works. DEV ONLY — never use on an exposed instance.
+homeassistant:
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - 127.0.0.1/32
+        - ::1/128
+        - 172.16.0.0/12
+      allow_bypass_login: true
+    - type: homeassistant
+
+# Remote debugger. Attach VS Code to localhost:5678 (see .vscode/launch.json).
+# wait: false = HA boots without waiting for a debugger to attach.
+debugpy:
+  start: true
+  wait: false
+  port: 5678
+
+logger:
+  default: info
+  logs:
+    custom_components.vasttrafik_timetable: debug
