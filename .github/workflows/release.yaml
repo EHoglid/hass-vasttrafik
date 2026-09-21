@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - custom_components/vasttrafik_timetable/manifest.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Read manifest version
+        id: manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(jq -r '.version // empty' custom_components/vasttrafik_timetable/manifest.json)"
+          if [[ -z "$VERSION" ]]; then
+            echo "manifest.json does not contain a version" >&2
+            exit 1
+          fi
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "manifest.json version '$VERSION' is not a valid SemVer version" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if release tag exists
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git rev-parse "${{ steps.manifest.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.manifest.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes
+
+      - name: Release already exists
+        if: steps.tag.outputs.exists == 'true'
+        shell: bash
+        run: echo "Release ${{ steps.manifest.outputs.tag }} already exists; skipping."
