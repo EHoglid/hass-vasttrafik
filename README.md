@@ -6,7 +6,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/EHoglid/hass-vasttrafik?sort=semver)](https://github.com/EHoglid/hass-vasttrafik/releases)
 [![GitHub issues](https://img.shields.io/github/issues/EHoglid/hass-vasttrafik)](https://github.com/EHoglid/hass-vasttrafik/issues)
 [![Project page](https://img.shields.io/badge/Project_page-GitHub_Pages-006b76)](https://ehoglid.github.io/hass-vasttrafik/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/EHoglid/hass-vasttrafik/blob/master/LICENSE)
 
 A custom Home Assistant integration that shows live bus, tram, train, and ferry
 departures from selected Västtrafik stop areas. It uses Journey Planner API v4,
