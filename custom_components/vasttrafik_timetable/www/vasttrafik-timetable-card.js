@@ -114,6 +114,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             page: swedish ? "Sida" : "Page",
             noDepartures: swedish ? "Inga kommande avgångar." : "No upcoming departures.",
             wheelchair: swedish ? "Visa rullstolsikon" : "Show wheelchair icon",
+            platforms: swedish ? "Lägen att visa" : "Platforms to show",
         };
         return labels[key];
     }
@@ -201,7 +202,11 @@ class VasttrafikTimetableCard extends HTMLElement {
             .split(",")
             .map((line) => line.trim().toLowerCase())
             .filter(Boolean);
-        const filteredDepartures = lineFilter.length === 0
+        const platformFilter = String(this._config?.platforms || "")
+            .split(",")
+            .map((platform) => platform.trim().toLowerCase())
+            .filter(Boolean);
+        const lineFilteredDepartures = lineFilter.length === 0
             ? departures
             : departures.filter((departure) => {
                 const values = [departure.line, departure.line_name]
@@ -210,6 +215,12 @@ class VasttrafikTimetableCard extends HTMLElement {
                 return lineFilter.some((line) => values.some((value) =>
                     value === line || value.endsWith(` ${line}`),
                 ));
+            });
+        const filteredDepartures = platformFilter.length === 0
+            ? lineFilteredDepartures
+            : lineFilteredDepartures.filter((departure) => {
+                const platform = String(departure.platform || "").toLowerCase().trim();
+                return platformFilter.includes(platform);
             });
         const groups = this._groupDepartures(filteredDepartures);
         const pageCount = Math.max(1, Math.ceil(groups.length / rowsPerPage));
@@ -413,11 +424,13 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
         const labels = swedish
             ? {
                 entity: "Avgångsenhet", lines: "Linjer att visa",
+                platforms: "Lägen att visa",
                 after: "Visa avgång efter", size: "Kortstorlek",
                 seconds: "Sekunder per sida", wheelchair: "Visa rullstolsikon",
             }
             : {
                 entity: "Departure entity", lines: "Lines to show",
+                platforms: "Platforms to show",
                 after: "Show departure after", size: "Card size",
                 seconds: "Seconds per page", wheelchair: "Show wheelchair icon",
             };
@@ -431,6 +444,7 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             </style>
             <label>${labels.entity}<select id="entity">${entities.map((entityId) => `<option value="${entityId}" ${entityId === this._config?.entity ? "selected" : ""}>${entityId}</option>`).join("")}</select></label>
             <label>${labels.lines} (comma-separated, optional)<input id="lines" type="text" placeholder="10, 12, 19" value="${this._config?.lines || ""}"></label>
+            <label>${labels.platforms} (comma-separated, optional)<input id="platforms" type="text" placeholder="A, C, A2" value="${this._config?.platforms || ""}"></label>
             <label>${labels.after}<select id="show_departure_after">
                 <option value="true" ${this._config?.show_departure_after !== false ? "selected" : ""}>True</option>
                 <option value="false" ${this._config?.show_departure_after === false ? "selected" : ""}>False</option>
@@ -448,7 +462,7 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (1.5 rows)</option>
             </select></label>
         `;
-        for (const id of ["entity", "lines", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
+        for (const id of ["entity", "lines", "platforms", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
             this.querySelector(`#${id}`).addEventListener("change", (event) => {
                 const value = ["show_departure_after", "show_wheelchair_accessible"].includes(id)
                     ? event.target.value === "true"

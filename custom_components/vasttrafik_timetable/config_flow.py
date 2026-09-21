@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, override
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -35,10 +35,78 @@ from .const import (
 )
 
 
+def _query_options_schema(defaults: dict[str, Any]) -> vol.Schema:
+    """Return the form schema for departure query options."""
+    return vol.Schema(
+        {
+            vol.Optional(
+                CONF_START_DATE_TIME,
+                default=defaults.get(CONF_START_DATE_TIME, ""),
+            ): str,
+            vol.Optional(
+                CONF_PLATFORMS, default=defaults.get(CONF_PLATFORMS, "")
+            ): str,
+            vol.Required(
+                CONF_TIME_SPAN,
+                default=defaults.get(CONF_TIME_SPAN, DEFAULT_TIME_SPAN),
+            ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1440)),
+            vol.Required(
+                CONF_MAX_DEPARTURES_PER_LINE,
+                default=defaults.get(
+                    CONF_MAX_DEPARTURES_PER_LINE,
+                    DEFAULT_MAX_DEPARTURES_PER_LINE,
+                ),
+            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=20)),
+            vol.Required(
+                CONF_API_LIMIT,
+                default=defaults.get(CONF_API_LIMIT, DEFAULT_API_LIMIT),
+            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
+            vol.Optional(
+                CONF_INCLUDE_OCCUPANCY,
+                default=defaults.get(CONF_INCLUDE_OCCUPANCY, False),
+            ): bool,
+            vol.Optional(
+                CONF_DIRECTION_GID,
+                default=defaults.get(CONF_DIRECTION_GID, ""),
+            ): str,
+        }
+    )
+
+
+def _validate_query_options(
+    user_input: dict[str, Any], errors: dict[str, str]
+) -> None:
+    """Validate departure query options in-place."""
+    try:
+        user_input[CONF_START_DATE_TIME] = (
+            VasttrafikTimetableConfigFlow._validate_datetime(
+                user_input[CONF_START_DATE_TIME]
+            )
+        )
+    except vol.Invalid:
+        errors[CONF_START_DATE_TIME] = "invalid_datetime"
+    try:
+        user_input[CONF_DIRECTION_GID] = (
+            VasttrafikTimetableConfigFlow._validate_stop_gid(
+                user_input[CONF_DIRECTION_GID]
+            )
+        )
+    except vol.Invalid:
+        errors[CONF_DIRECTION_GID] = "invalid_stop_gid"
+
+
 class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle the Västtrafik Journey Planner config flow."""
 
     VERSION = 1
+
+    @staticmethod
+    @override
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow."""
+        return VasttrafikTimetableOptionsFlow(config_entry)
 
     def __init__(self) -> None:
         self._credentials: dict[str, str] = {}
@@ -200,18 +268,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_search()
         errors: dict[str, str] = {}
         if user_input is not None:
-            try:
-                user_input[CONF_START_DATE_TIME] = self._validate_datetime(
-                    user_input[CONF_START_DATE_TIME]
-                )
-            except vol.Invalid:
-                errors[CONF_START_DATE_TIME] = "invalid_datetime"
-            try:
-                user_input[CONF_DIRECTION_GID] = self._validate_stop_gid(
-                    user_input[CONF_DIRECTION_GID]
-                )
-            except vol.Invalid:
-                errors[CONF_DIRECTION_GID] = "invalid_stop_gid"
+            _validate_query_options(user_input, errors)
             if not errors:
                 return self.async_create_entry(
                     title=self._selected_stop.name,
@@ -225,24 +282,7 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="options",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(CONF_START_DATE_TIME, default=""): str,
-                    vol.Optional(CONF_PLATFORMS, default=""): str,
-                    vol.Required(
-                        CONF_TIME_SPAN, default=DEFAULT_TIME_SPAN
-                    ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1440)),
-                    vol.Required(
-                        CONF_MAX_DEPARTURES_PER_LINE,
-                        default=DEFAULT_MAX_DEPARTURES_PER_LINE,
-                    ): vol.All(vol.Coerce(int), vol.Range(min=1, max=20)),
-                    vol.Required(
-                        CONF_API_LIMIT, default=DEFAULT_API_LIMIT
-                    ): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
-                    vol.Optional(CONF_INCLUDE_OCCUPANCY, default=False): bool,
-                    vol.Optional(CONF_DIRECTION_GID, default=""): str,
-                }
-            ),
+            data_schema=_query_options_schema({}),
             errors=errors,
         )
 
@@ -283,5 +323,30 @@ class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_CLIENT_SECRET): str,
                 }
             ),
+            errors=errors,
+        )
+
+
+class VasttrafikTimetableOptionsFlow(config_entries.OptionsFlow):
+    """Handle editable Västtrafik query options."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self._config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage departure query options."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            _validate_query_options(user_input, errors)
+            if not errors:
+                return self.async_create_entry(title="", data=user_input)
+
+        defaults = {**self._config_entry.data, **self._config_entry.options}
+        return self.async_show_form(
+            step_id="init",
+            data_schema=_query_options_schema(defaults),
             errors=errors,
         )

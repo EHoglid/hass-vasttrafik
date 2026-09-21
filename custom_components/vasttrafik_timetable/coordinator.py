@@ -45,8 +45,9 @@ class VasttrafikCoordinator(DataUpdateCoordinator[list[Departure]]):
 
     async def _async_update_data(self) -> list[Departure]:
         try:
+            options = {**self._entry.data, **self._entry.options}
             departures = await self._client.async_get_departures_with_options(
-                self._stop_gid, dict(self._entry.data)
+                self._stop_gid, options
             )
         except VasttrafikAuthenticationError as err:
             _LOGGER.warning(
