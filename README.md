@@ -1,7 +1,10 @@
 # Västtrafik Journey Planner for Home Assistant
 
 [![CI](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/ci.yml)
+[![HACS validation](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/validate.yaml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/validate.yaml)
 [![GitHub Pages](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml/badge.svg)](https://github.com/EHoglid/hass-vasttrafik/actions/workflows/pages.yml)
+[![GitHub release](https://img.shields.io/github/v/release/EHoglid/hass-vasttrafik?sort=semver)](https://github.com/EHoglid/hass-vasttrafik/releases)
+[![GitHub issues](https://img.shields.io/github/issues/EHoglid/hass-vasttrafik)](https://github.com/EHoglid/hass-vasttrafik/issues)
 [![Project page](https://img.shields.io/badge/Project_page-GitHub_Pages-006b76)](https://ehoglid.github.io/hass-vasttrafik/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
