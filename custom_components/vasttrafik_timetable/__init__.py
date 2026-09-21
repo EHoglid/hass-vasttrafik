@@ -29,6 +29,11 @@ DATA_STATIC_PATH_REGISTERED = "vasttrafik_timetable_static_path_registered"
 DATA_LOVELACE_RESOURCE_URL = "vasttrafik_timetable_lovelace_resource_url"
 
 
+def _hash_file(path: Path) -> str:
+    """Return a short content hash for a static asset."""
+    return sha256(path.read_bytes()).hexdigest()[:12]
+
+
 async def _async_register_lovelace_resource(
     hass: HomeAssistant, card_url: str
 ) -> bool:
@@ -101,7 +106,7 @@ async def _async_register_frontend_card(hass: HomeAssistant) -> None:
     card_dir = Path(__file__).parent / "www"
     card_file = card_dir / "vasttrafik-timetable-card.js"
     loader_file = card_dir / "vasttrafik-timetable-card-loader.js"
-    cache_bust = sha256(card_file.read_bytes()).hexdigest()[:12]
+    cache_bust = await hass.async_add_executor_job(_hash_file, card_file)
     card_url = f"{CARD_PATH}?v={cache_bust}"
     if not hass.data.get(DATA_STATIC_PATH_REGISTERED):
         await hass.http.async_register_static_paths(
