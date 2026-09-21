@@ -3,14 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#008fc7" />
     <meta
       name="description"
       content="Västtrafik Journey Planner for Home Assistant. Live departures for buses, trams, trains, and ferries."
     />
+    <meta
+      property="og:title"
+      content="Västtrafik Journey Planner for Home Assistant"
+    />
+    <meta
+      property="og:description"
+      content="Live Västtrafik departures for buses, trams, trains, and ferries."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="vasttrafik-icon.png" />
     <title>Västtrafik Journey Planner for Home Assistant</title>
+    <link rel="icon" href="vasttrafik-icon.png" type="image/png" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
     <header class="site-header">
       <nav class="nav shell" aria-label="Main navigation">
         <a class="brand" href="#top"
@@ -23,15 +37,18 @@
         <div class="nav-links">
           <a href="#install">Install</a>
           <a href="#card">Dashboard card</a>
-          <a class="nav-cta" href="https://github.com/EHoglid/hass-vasttrafik"
+          <a
+            class="nav-cta"
+            href="https://github.com/EHoglid/hass-vasttrafik"
+            rel="noopener noreferrer"
             >View on GitHub</a
           >
         </div>
       </nav>
     </header>
 
-    <main id="top">
-      <section class="hero shell">
+    <main id="main-content" class="top-shell">
+      <section class="hero shell" id="top">
         <div class="hero-copy">
           <p class="eyebrow">Home Assistant custom integration</p>
           <h1>Departures that feel like a real departure board.</h1>
@@ -41,21 +58,20 @@
             purpose-built Lovelace card.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#install"
-              >Install the integration</a
-            >
+            <a class="button primary" href="#install">Install the integration</a>
             <a
               class="button secondary"
               href="https://github.com/EHoglid/hass-vasttrafik"
+              rel="noopener noreferrer"
               >Read the source</a
             >
           </div>
-          <div class="trust-row">
+          <div class="trust-row" aria-label="Key features">
             <span>Journey Planner API v4</span><span>HACS compatible</span
             ><span>Open source</span>
           </div>
         </div>
-        <div class="board-preview" aria-label="Example departure board">
+        <div class="board-preview" aria-label="Example departure board showing Lindholmen departures">
           <div class="board-top"><span>Lindholmen</span><time>14:32</time></div>
           <div class="board-head">
             <span></span><span>Line</span><span>Destination</span
@@ -82,7 +98,7 @@
             ><strong>Partille centrum</strong><b>16 <small>min</small></b
             ><i>D</i>
           </div>
-          <div class="board-footer">
+          <div class="board-footer" aria-hidden="true">
             <span class="active-page"></span><span class="page-dot"></span
             ><span class="page-dot"></span><span class="page-dot"></span>
           </div>
@@ -270,6 +286,7 @@ page_seconds: 5</code></pre>
         <a
           class="button secondary"
           href="https://github.com/EHoglid/hass-vasttrafik#development"
+          rel="noopener noreferrer"
           >Development guide</a
         >
       </section>
@@ -279,7 +296,7 @@ page_seconds: 5</code></pre>
       <div class="shell footer-inner">
         <span>Västtrafik Journey Planner</span
         ><span>Made for Home Assistant</span
-        ><a href="https://github.com/EHoglid/hass-vasttrafik"
+        ><a href="https://github.com/EHoglid/hass-vasttrafik" rel="noopener noreferrer"
           >EHoglid/hass-vasttrafik</a
         >
       </div>
