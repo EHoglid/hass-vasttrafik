@@ -8,6 +8,7 @@ class VasttrafikTimetableCard extends HTMLElement {
         this._timer = null;
         this._availableHeight = 0;
         this._chromeHeight = 0;
+        this._chromeMeasurementPending = false;
         this._resizeObserver = this._createResizeObserver();
         this._resizeObserver?.observe(this);
         this._observedCard = null;
@@ -233,8 +234,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             pageIndex * rowsPerPage,
             (pageIndex + 1) * rowsPerPage,
         );
-        const title = (this._config?.title || entity?.attributes.friendly_name || "Västtrafik")
-            .replace(/\s+Next departure$/i, "");
+        const title = this._config?.title || entity?.attributes.stop_name || "Västtrafik";
 
         if (this._observedCard) {
             this._resizeObserver?.unobserve(this._observedCard);
@@ -342,16 +342,26 @@ class VasttrafikTimetableCard extends HTMLElement {
             this._resizeObserver?.observe(card);
             this._observedCard = card;
         }
-        const header = this.shadowRoot.querySelector(".header");
-        const columns = this.shadowRoot.querySelector(".columns");
-        const pager = this.shadowRoot.querySelector(".pager");
-        const chromeHeight = [header, columns, pager].reduce(
-            (height, element) => height + (element?.offsetHeight || 0),
-            0,
-        );
-        if (chromeHeight && chromeHeight !== this._chromeHeight) {
-            this._chromeHeight = chromeHeight;
-            requestAnimationFrame(() => this._render());
+        if (!this._chromeMeasurementPending) {
+            this._chromeMeasurementPending = true;
+            requestAnimationFrame(() => {
+                this._chromeMeasurementPending = false;
+                if (!this.isConnected) {
+                    return;
+                }
+
+                const chromeHeight = [".header", ".columns", ".pager"].reduce(
+                    (height, selector) => {
+                        const element = this.shadowRoot.querySelector(selector);
+                        return height + (element?.getBoundingClientRect().height || 0);
+                    },
+                    0,
+                );
+                if (chromeHeight && chromeHeight !== this._chromeHeight) {
+                    this._chromeHeight = chromeHeight;
+                    this._render();
+                }
+            });
         }
     }
 
@@ -416,35 +426,61 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
 
     set hass(hass) {
         this._hass = hass;
-        this._render();
+        const entityOptionsKey = JSON.stringify(this._entityOptions(hass));
+        const language = (hass.locale?.language || hass.language || "en")
+            .toLowerCase();
+        if (
+            entityOptionsKey !== this._entityOptionsKey ||
+            language !== this._language
+        ) {
+            this._render();
+        }
+    }
+
+    _entityOptions(hass) {
+        return Object.keys(hass.states)
+            .filter((entityId) =>
+                entityId.startsWith("sensor.") &&
+                Array.isArray(hass.states[entityId].attributes.departures),
+            )
+            .map((entityId) => ({
+                entityId,
+                name: hass.states[entityId].attributes.stop_name || entityId,
+            }));
     }
 
     _render() {
         if (!this._hass) return;
         const swedish = (this._hass.locale?.language || this._hass.language || "en")
             .toLowerCase().startsWith("sv");
+        this._language = (this._hass.locale?.language || this._hass.language || "en")
+            .toLowerCase();
         const labels = swedish
             ? {
-                entity: "Avgångsenhet", lines: "Linjer att visa",
+                entity: "Hållplats", title: "Titel",
+                titlePlaceholder: "Hållplatsnamn",
+                lines: "Linjer att visa",
                 platforms: "Lägen att visa",
                 after: "Visa avgång efter", size: "Kortstorlek",
                 seconds: "Sekunder per sida", wheelchair: "Visa rullstolsikon",
             }
             : {
-                entity: "Departure entity", lines: "Lines to show",
+                entity: "Departure stop", title: "Title",
+                titlePlaceholder: "Stop name",
+                lines: "Lines to show",
                 platforms: "Platforms to show",
                 after: "Show departure after", size: "Card size",
                 seconds: "Seconds per page", wheelchair: "Show wheelchair icon",
             };
-        const entities = Object.keys(this._hass.states).filter((entityId) =>
-            entityId.startsWith("sensor.") && Array.isArray(this._hass.states[entityId].attributes.departures),
-        );
+        const entities = this._entityOptions(this._hass);
+        this._entityOptionsKey = JSON.stringify(entities);
         this.innerHTML = `
             <style>
                 label { display: grid; gap: 4px; margin: 8px 0; }
                 input, select { box-sizing: border-box; padding: 6px; width: 100%; }
             </style>
-            <label>${labels.entity}<select id="entity">${entities.map((entityId) => `<option value="${entityId}" ${entityId === this._config?.entity ? "selected" : ""}>${entityId}</option>`).join("")}</select></label>
+            <label>${labels.entity}<select id="entity"></select></label>
+            <label>${labels.title}<input id="title" type="text" placeholder="${labels.titlePlaceholder}"></label>
             <label>${labels.lines} (comma-separated, optional)<input id="lines" type="text" placeholder="10, 12, 19" value="${this._config?.lines || ""}"></label>
             <label>${labels.platforms} (comma-separated, optional)<input id="platforms" type="text" placeholder="A, C, A2" value="${this._config?.platforms || ""}"></label>
             <label>${labels.after}<select id="show_departure_after">
@@ -464,7 +500,12 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="xl" ${this._config?.size === "xl" ? "selected" : ""}>XL (1.5 rows)</option>
             </select></label>
         `;
-        for (const id of ["entity", "lines", "platforms", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
+        const entitySelect = this.querySelector("#entity");
+        for (const { entityId, name } of entities) {
+            entitySelect.add(new Option(name, entityId, false, entityId === this._config?.entity));
+        }
+        this.querySelector("#title").value = this._config?.title || "";
+        for (const id of ["entity", "title", "lines", "platforms", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
             this.querySelector(`#${id}`).addEventListener("change", (event) => {
                 const value = ["show_departure_after", "show_wheelchair_accessible"].includes(id)
                     ? event.target.value === "true"

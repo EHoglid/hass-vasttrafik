@@ -100,6 +100,8 @@ labels.
 
 Card settings:
 
+- `title`: optional custom card title. If omitted, the card uses the selected
+  entity's custom name if set, otherwise the stop name.
 - `size`: `xs`, `s`, `m`, `l`, or `xl`. These use approximately `0.75`, `1`,
   `1.25`, `1.5`, and `1.5` Home Assistant grid rows per departure respectively.
   Legacy values `small`, `medium`, and `large` remain supported as aliases for
