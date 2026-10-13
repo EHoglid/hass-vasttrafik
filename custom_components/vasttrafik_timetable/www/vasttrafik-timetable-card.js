@@ -1,9 +1,5 @@
 window.__vasttrafikTimetableCardLoaded = true;
 
-function getEntityCustomName(hass, entityId) {
-    return entityId ? hass.entities?.[entityId]?.name : undefined;
-}
-
 class VasttrafikTimetableCard extends HTMLElement {
     constructor() {
         super();
@@ -238,10 +234,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             pageIndex * rowsPerPage,
             (pageIndex + 1) * rowsPerPage,
         );
-        const title = this._config?.title ||
-            getEntityCustomName(this._hass, entityId) ||
-            entity?.attributes.stop_name ||
-            "Västtrafik";
+        const title = this._config?.title || entity?.attributes.stop_name || "Västtrafik";
 
         if (this._observedCard) {
             this._resizeObserver?.unobserve(this._observedCard);
@@ -433,13 +426,35 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
 
     set hass(hass) {
         this._hass = hass;
-        this._render();
+        const entityOptionsKey = JSON.stringify(this._entityOptions(hass));
+        const language = (hass.locale?.language || hass.language || "en")
+            .toLowerCase();
+        if (
+            entityOptionsKey !== this._entityOptionsKey ||
+            language !== this._language
+        ) {
+            this._render();
+        }
+    }
+
+    _entityOptions(hass) {
+        return Object.keys(hass.states)
+            .filter((entityId) =>
+                entityId.startsWith("sensor.") &&
+                Array.isArray(hass.states[entityId].attributes.departures),
+            )
+            .map((entityId) => ({
+                entityId,
+                name: hass.states[entityId].attributes.stop_name || entityId,
+            }));
     }
 
     _render() {
         if (!this._hass) return;
         const swedish = (this._hass.locale?.language || this._hass.language || "en")
             .toLowerCase().startsWith("sv");
+        this._language = (this._hass.locale?.language || this._hass.language || "en")
+            .toLowerCase();
         const labels = swedish
             ? {
                 entity: "Hållplats", title: "Titel",
@@ -457,9 +472,8 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 after: "Show departure after", size: "Card size",
                 seconds: "Seconds per page", wheelchair: "Show wheelchair icon",
             };
-        const entities = Object.keys(this._hass.states).filter((entityId) =>
-            entityId.startsWith("sensor.") && Array.isArray(this._hass.states[entityId].attributes.departures),
-        );
+        const entities = this._entityOptions(this._hass);
+        this._entityOptionsKey = JSON.stringify(entities);
         this.innerHTML = `
             <style>
                 label { display: grid; gap: 4px; margin: 8px 0; }
@@ -487,11 +501,7 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             </select></label>
         `;
         const entitySelect = this.querySelector("#entity");
-        for (const entityId of entities) {
-            const state = this._hass.states[entityId];
-            const name = getEntityCustomName(this._hass, entityId) ||
-                state.attributes.stop_name ||
-                entityId;
+        for (const { entityId, name } of entities) {
             entitySelect.add(new Option(name, entityId, false, entityId === this._config?.entity));
         }
         this.querySelector("#title").value = this._config?.title || "";
