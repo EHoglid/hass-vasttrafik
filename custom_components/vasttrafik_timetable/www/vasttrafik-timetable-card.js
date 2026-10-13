@@ -233,8 +233,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             pageIndex * rowsPerPage,
             (pageIndex + 1) * rowsPerPage,
         );
-        const title = (this._config?.title || entity?.attributes.friendly_name || "Västtrafik")
-            .replace(/\s+Next departure$/i, "");
+        const title = this._config?.title || entity?.attributes.stop_name || "Västtrafik";
 
         if (this._observedCard) {
             this._resizeObserver?.unobserve(this._observedCard);

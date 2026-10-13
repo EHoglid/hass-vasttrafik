@@ -68,11 +68,12 @@ class VasttrafikSensorBase(
     ) -> None:
         super().__init__(entry.runtime_data)
         self.entity_description = description
+        self._stop_name = entry.data[CONF_STOP_NAME]
         stop_gid = entry.data[CONF_STOP_GID]
         self._attr_unique_id = f"{stop_gid}_{description.key}"
         self._attr_device_info = dr.DeviceInfo(
             identifiers={(DOMAIN, stop_gid)},
-            name=entry.data[CONF_STOP_NAME],
+            name=self._stop_name,
             manufacturer="Västtrafik",
             model="Departure board",
             entry_type=dr.DeviceEntryType.SERVICE,
@@ -105,6 +106,7 @@ class VasttrafikNextDepartureSensor(VasttrafikSensorBase):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         return {
+            "stop_name": self._stop_name,
             "departures": [
                 _departure_attributes(departure)
                 for departure in self.coordinator.data
