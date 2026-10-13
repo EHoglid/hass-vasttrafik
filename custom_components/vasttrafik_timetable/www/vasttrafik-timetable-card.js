@@ -1,5 +1,9 @@
 window.__vasttrafikTimetableCardLoaded = true;
 
+function getEntityCustomName(hass, entityId) {
+    return entityId ? hass.entities?.[entityId]?.name : undefined;
+}
+
 class VasttrafikTimetableCard extends HTMLElement {
     constructor() {
         super();
@@ -235,7 +239,7 @@ class VasttrafikTimetableCard extends HTMLElement {
             (pageIndex + 1) * rowsPerPage,
         );
         const title = this._config?.title ||
-            entity?.attributes.friendly_name ||
+            getEntityCustomName(this._hass, entityId) ||
             entity?.attributes.stop_name ||
             "Västtrafik";
 
@@ -485,7 +489,9 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
         const entitySelect = this.querySelector("#entity");
         for (const entityId of entities) {
             const state = this._hass.states[entityId];
-            const name = state.attributes.stop_name || entityId;
+            const name = getEntityCustomName(this._hass, entityId) ||
+                state.attributes.stop_name ||
+                entityId;
             entitySelect.add(new Option(name, entityId, false, entityId === this._config?.entity));
         }
         this.querySelector("#title").value = this._config?.title || "";
