@@ -13,11 +13,14 @@ from homeassistant.components.lovelace.const import LOVELACE_DATA, MODE_STORAGE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_URL
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import VasttrafikClient
-from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, PLATFORMS
+from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, DOMAIN, PLATFORMS
 from .coordinator import VasttrafikCoordinator
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 

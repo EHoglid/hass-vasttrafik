@@ -2,7 +2,7 @@
   "domain": "vasttrafik_timetable",
   "name": "Västtrafik Departure Board",
   "codeowners": ["@EHoglid"],
-  "dependencies": ["frontend", "lovelace"],
+  "dependencies": ["frontend", "http", "lovelace"],
   "config_flow": true,
   "documentation": "https://ehoglid.github.io/hass-vasttrafik/",
   "integration_type": "service",
