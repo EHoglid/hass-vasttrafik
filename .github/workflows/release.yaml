@@ -40,6 +40,22 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Package integration
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILENAME="$(jq -r '.filename // empty' hacs.json)"
+          if [[ -z "$FILENAME" || "$FILENAME" != *.zip ]]; then
+            echo "hacs.json must define a .zip filename" >&2
+            exit 1
+          fi
+          (
+            cd custom_components/vasttrafik_timetable
+            zip -q -r "$GITHUB_WORKSPACE/$FILENAME" .
+          )
+          echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
+
       - name: Check if release tag exists
         id: tag
         shell: bash
@@ -56,15 +72,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.manifest.outputs.tag }}
+          FILENAME: ${{ steps.package.outputs.filename }}
         shell: bash
         run: |
           set -euo pipefail
-          gh release create "$TAG" \
+          gh release create "$TAG" "$FILENAME" \
             --target "$GITHUB_SHA" \
             --title "$TAG" \
             --generate-notes
 
-      - name: Release already exists
+      - name: Upload archive to existing release
         if: steps.tag.outputs.exists == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.manifest.outputs.tag }}
+          FILENAME: ${{ steps.package.outputs.filename }}
         shell: bash
-        run: echo "Release ${{ steps.manifest.outputs.tag }} already exists; skipping."
+        run: gh release upload "$TAG" "$FILENAME" --clobber

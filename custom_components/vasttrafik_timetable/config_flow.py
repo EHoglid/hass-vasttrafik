@@ -1,4 +1,4 @@
-"""Config flow for Västtrafik Journey Planner."""
+"""Config flow for Västtrafik Departure Board."""
 
 from __future__ import annotations
 
@@ -100,7 +100,7 @@ def _validate_query_options(
 
 
 class VasttrafikTimetableConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle the Västtrafik Journey Planner config flow."""
+    """Handle the Västtrafik Departure Board config flow."""
 
     VERSION = 1
 
