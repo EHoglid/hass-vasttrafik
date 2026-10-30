@@ -1,4 +1,7 @@
 {
-  "name": "Västtrafik Journey Planner",
+  "name": "Västtrafik Departure Board",
+  "country": "SE",
+  "zip_release": true,
+  "filename": "vasttrafik-departure-board.zip",
   "render_readme": true
 }

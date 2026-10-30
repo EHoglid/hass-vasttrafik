@@ -1,6 +1,6 @@
 {
   "domain": "vasttrafik_timetable",
-  "name": "Västtrafik Journey Planner",
+  "name": "Västtrafik Departure Board",
   "codeowners": ["@EHoglid"],
   "dependencies": ["frontend", "lovelace"],
   "config_flow": true,
@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/EHoglid/hass-vasttrafik/issues",
   "iot_class": "cloud_polling",
   "requirements": [],
-  "version": "0.2.2"
+  "version": "0.2.4"
 }
