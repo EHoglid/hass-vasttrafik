@@ -367,9 +367,9 @@ class VasttrafikTimetableCard extends HTMLElement {
 
     _row(group, cardSize, showDepartureAfter, showWheelchair) {
         const departure = group[0];
-        const background = departure.line_background_color || "#555555";
-        const foreground = departure.line_foreground_color || "#ffffff";
-        const border = departure.line_border_color || background;
+        const background = this._color(departure.line_background_color, "#555555");
+        const foreground = this._color(departure.line_foreground_color, "#ffffff");
+        const border = this._color(departure.line_border_color, background);
         const times = group.slice(0, showDepartureAfter ? 2 : 1);
         const direction = String(departure.direction || "");
         const via = direction.includes(" via ")
@@ -405,6 +405,12 @@ class VasttrafikTimetableCard extends HTMLElement {
       ${timeCells.join("")}
       <div class="platform">${this._escape(departure.platform || "-")}</div>
     </div>`;
+    }
+
+    _color(value, fallback) {
+        return typeof value === "string" && /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value)
+            ? value
+            : fallback;
     }
 
     _escape(value) {
@@ -481,8 +487,8 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             </style>
             <label>${labels.entity}<select id="entity"></select></label>
             <label>${labels.title}<input id="title" type="text" placeholder="${labels.titlePlaceholder}"></label>
-            <label>${labels.lines} (comma-separated, optional)<input id="lines" type="text" placeholder="10, 12, 19" value="${this._config?.lines || ""}"></label>
-            <label>${labels.platforms} (comma-separated, optional)<input id="platforms" type="text" placeholder="A, C, A2" value="${this._config?.platforms || ""}"></label>
+            <label>${labels.lines} (comma-separated, optional)<input id="lines" type="text" placeholder="10, 12, 19"></label>
+            <label>${labels.platforms} (comma-separated, optional)<input id="platforms" type="text" placeholder="A, C, A2"></label>
             <label>${labels.after}<select id="show_departure_after">
                 <option value="true" ${this._config?.show_departure_after !== false ? "selected" : ""}>True</option>
                 <option value="false" ${this._config?.show_departure_after === false ? "selected" : ""}>False</option>
@@ -491,7 +497,7 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
                 <option value="false" ${this._config?.show_wheelchair_accessible !== true ? "selected" : ""}>False</option>
                 <option value="true" ${this._config?.show_wheelchair_accessible === true ? "selected" : ""}>True</option>
             </select></label>
-            <label>${labels.seconds}<input id="page_seconds" type="number" min="1" max="60" value="${this._config?.page_seconds || 5}"></label>
+            <label>${labels.seconds}<input id="page_seconds" type="number" min="1" max="60"></label>
             <label>${labels.size}<select id="size">
                 <option value="xs" ${!this._config?.size || this._config?.size === "xs" ? "selected" : ""}>XS (0.75 row)</option>
                 <option value="s" ${this._config?.size === "s" ? "selected" : ""}>S (1 row)</option>
@@ -505,6 +511,9 @@ class VasttrafikTimetableCardEditor extends HTMLElement {
             entitySelect.add(new Option(name, entityId, false, entityId === this._config?.entity));
         }
         this.querySelector("#title").value = this._config?.title || "";
+        this.querySelector("#lines").value = this._config?.lines || "";
+        this.querySelector("#platforms").value = this._config?.platforms || "";
+        this.querySelector("#page_seconds").value = this._config?.page_seconds || 5;
         for (const id of ["entity", "title", "lines", "platforms", "show_departure_after", "show_wheelchair_accessible", "page_seconds", "size"]) {
             this.querySelector(`#${id}`).addEventListener("change", (event) => {
                 const value = ["show_departure_after", "show_wheelchair_accessible"].includes(id)
