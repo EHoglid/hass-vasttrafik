@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <title>Card security regression tests</title>
+  <pre id="results">Running...</pre>
+  <script src="../../custom_components/vasttrafik_timetable/www/vasttrafik-timetable-card.js"></script>
+  <script>
+    const results = document.querySelector("#results");
+    let checks = 0;
+    function assert(condition, message) {
+      if (!condition) throw new Error(message);
+      checks += 1;
+    }
+
+    try {
+      const card = document.createElement("vasttrafik-timetable-card");
+      card._hass = { states: {}, language: "en" };
+      const payload =
+        '#fff"><img src="invalid" onerror="window.injected=true">';
+      const departure = {
+        line: "10",
+        direction: "Central station",
+        estimated_time: new Date(Date.now() + 600000).toISOString(),
+        platform: "A",
+      };
+      const row = document.createElement("div");
+      const colors = [
+        ["line_background_color", "--line-background", "#555555"],
+        ["line_foreground_color", "--line-foreground", "#ffffff"],
+        ["line_border_color", "--line-border", "#555555"],
+      ];
+      for (const [attribute, property, fallback] of colors) {
+        for (const value of [
+          payload,
+          "#12345",
+          "#1234567",
+          "red",
+          "#fff;display:none",
+          "#fff\n",
+          {},
+          null,
+        ]) {
+          row.innerHTML = card._row(
+            [{ ...departure, [attribute]: value }],
+            "s",
+            false,
+            false,
+          );
+          assert(!row.querySelector("img"), `${attribute}: injected markup`);
+          assert(
+            row.querySelector(".line").style.getPropertyValue(property) ===
+              fallback,
+            `${attribute}: invalid color did not use fallback`,
+          );
+        }
+        for (const value of ["#aBc", "#ABcd", "#123abc", "#123ABCff"]) {
+          row.innerHTML = card._row(
+            [{ ...departure, [attribute]: value }],
+            "s",
+            false,
+            false,
+          );
+          assert(
+            row.querySelector(".line").style.getPropertyValue(property) ===
+              value,
+            `${attribute}: valid color was changed`,
+          );
+        }
+      }
+      row.innerHTML = card._row(
+        [
+          {
+            ...departure,
+            line_background_color: "#123abc",
+            line_border_color: payload,
+          },
+        ],
+        "s",
+        false,
+        false,
+      );
+      assert(
+        row.querySelector(".line").style.getPropertyValue("--line-border") ===
+          "#123abc",
+        "Invalid border must fall back to validated background",
+      );
+
+      const editor = document.createElement("vasttrafik-timetable-card-editor");
+      const config = {
+        entity: "sensor.departures",
+        title: payload,
+        lines: payload,
+        platforms: payload,
+        page_seconds: payload,
+      };
+      editor.setConfig(config);
+      editor.hass = { states: {}, language: "en" };
+      assert(!editor.querySelector("img"), "Editor injected markup");
+      for (const id of ["title", "lines", "platforms"]) {
+        assert(
+          editor.querySelector(`#${id}`).value === payload,
+          `${id}: literal value not preserved`,
+        );
+      }
+      assert(
+        editor.querySelector("#page_seconds").value === "",
+        "Invalid number should be sanitized by input",
+      );
+      editor.setConfig({
+        ...config,
+        lines: ["10", "12"],
+        platforms: "A, C",
+        page_seconds: 7,
+      });
+      assert(
+        editor.querySelector("#lines").value === "10,12",
+        "Array line config not preserved",
+      );
+      assert(
+        editor.querySelector("#platforms").value === "A, C",
+        "Platform config not preserved",
+      );
+      assert(
+        editor.querySelector("#page_seconds").value === "7",
+        "Numeric config not preserved",
+      );
+      for (const [id, input, expected] of [
+        ["lines", "19", "19"],
+        ["platforms", "B", "B"],
+        ["page_seconds", "9", 9],
+      ]) {
+        let changed;
+        editor.addEventListener(
+          "config-changed",
+          (event) => {
+            changed = event.detail.config;
+          },
+          { once: true },
+        );
+        editor.querySelector(`#${id}`).value = input;
+        editor.querySelector(`#${id}`).dispatchEvent(new Event("change"));
+        assert(
+          changed[id] === expected,
+          `${id}: config-changed value incorrect`,
+        );
+        assert(
+          changed.entity === config.entity,
+          `${id}: existing config was lost`,
+        );
+      }
+      editor.setConfig({});
+      assert(
+        editor.querySelector("#lines").value === "",
+        "Default lines incorrect",
+      );
+      assert(
+        editor.querySelector("#platforms").value === "",
+        "Default platforms incorrect",
+      );
+      assert(
+        editor.querySelector("#page_seconds").value === "5",
+        "Default page seconds incorrect",
+      );
+      results.textContent = `PASS: ${checks} checks`;
+    } catch (error) {
+      results.textContent = `FAIL: ${error.stack}`;
+      throw error;
+    }
+  </script>
+</html>
