@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/EHoglid/hass-vasttrafik/blob/master/LICENSE)
 
 A custom Home Assistant integration that shows live bus, tram, train, and ferry
-departures from selected Västtrafik stop areas. It uses Journey Planner API v4,
+departures from selected Västtrafik stop areas. It uses the Journey Planner API v4,
 fetches the configured time window with pagination, and refreshes once per
 minute.
 
@@ -18,17 +18,24 @@ identify the service. They are not covered by this repository's MIT license.
 
 ## Install
 
-### HACS custom repository
+### Home Assistant Marketplace (Former HACS)
 
-Until the integration is included in the default HACS catalogue, add it as a
-custom repository:
+1. Open **Marketplace** in Home Assistant.
+2. Search for **Västtrafik Departure Board**, download it, and restart Home
+  Assistant.
 
-1. Open **HACS** in Home Assistant.
+### Marketplace custom repository
+
+If you can't find the integration in the default Marketplace catalog, add custom
+repository to Marketplace:
+
+1. Open **Marketplace** in Home Assistant.
 2. Open **Integrations** and select the three-dot menu.
 3. Choose **Custom repositories**.
 4. Enter `EHoglid/hass-vasttrafik`.
 5. Select **Integration** as the repository type and click **Add**.
-6. Search for **Västtrafik Departure Board**, download it, and restart Home Assistant.
+6. Search for **Västtrafik Departure Board**, download it, and restart Home
+  Assistant.
 
 ### Manual installation
 
@@ -42,8 +49,8 @@ custom repository:
 
 1. Create an account at <https://developer.vasttrafik.se/>.
 2. Create an application and subscribe it to **Planera Resa v4**.
-3. Add **Västtrafik Departure Board** in Home Assistant and enter the application's
-  Client ID and Client Secret the first time.
+3. Add **Västtrafik Departure Board** in Home Assistant and enter your
+  application's client ID and client secret when prompted.
 4. Search for a stop, select a result, and configure its departure query.
 
 When adding another stop, the integration reuses the credentials from the
@@ -53,11 +60,11 @@ The stop configuration supports:
 
 - Start date and time in RFC 3339 format
 - Platform filtering with comma-separated platform names
-- Time span from 0 to 1440 minutes, default 60
-- Maximum departures per line and direction, default 2
-- API page size, default 10
+- Time span from 0 to 1,440 minutes (default: 60)
+- Maximum departures per line and direction (default: 2)
+- API page size (default: 10)
 - Optional occupancy data
-- Optional direction stop-area GID filtering
+- Optional filtering by direction stop-area GID
 
 All API pages in the selected time window are fetched automatically.
 
@@ -95,7 +102,7 @@ page_seconds: 5
 
 The card groups departures by line and destination, shows the closest two
 departures as **Next** and **Then**, and displays line colors, transport icons,
-platforms, and estimated times. It follows the Home Assistant language for its
+platforms, and estimated times. It uses the language set in Home Assistant for its
 labels.
 
 Card settings:
@@ -110,7 +117,7 @@ Card settings:
   names such as `10, 12, Buss 19`. Leave empty to show all lines.
 - `show_departure_after`: `true` or `false`, default `true`. When false, the
   `Then/Därefter` column is hidden entirely.
-- `page_seconds`: page rotation interval from 1 to 60 seconds, default 5.
+- `page_seconds`: page rotation interval from 1 to 60 seconds (default: 5).
 
 The card automatically rotates through additional pages and shows the current
 page, progress bar, and page indicators. The JavaScript card only requires a
