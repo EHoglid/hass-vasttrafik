@@ -6,6 +6,17 @@ on:
     paths:
       - custom_components/vasttrafik_timetable/manifest.json
   workflow_dispatch:
+    inputs:
+      bump:
+        description: Version increment
+        type: choice
+        required: true
+        default: None
+        options:
+          - None
+          - Patch
+          - Minor
+          - Major
 
 permissions:
   contents: write
@@ -23,12 +34,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read manifest version
+      - name: Select and update manifest version
         id: manifest
         shell: bash
+        env:
+          BUMP: ${{ inputs.bump || 'None' }}
         run: |
           set -euo pipefail
-          VERSION="$(jq -r '.version // empty' custom_components/vasttrafik_timetable/manifest.json)"
+          MANIFEST=custom_components/vasttrafik_timetable/manifest.json
+          VERSION="$(jq -r '.version // empty' "$MANIFEST")"
           if [[ -z "$VERSION" ]]; then
             echo "manifest.json does not contain a version" >&2
             exit 1
@@ -37,8 +51,50 @@ jobs:
             echo "manifest.json version '$VERSION' is not a valid SemVer version" >&2
             exit 1
           fi
+
+          case "$BUMP" in
+            None) ;;
+            Patch|Minor|Major)
+              if [[ "$GITHUB_REF" != refs/heads/master ]]; then
+                echo "Version bumps must be run from master" >&2
+                exit 1
+              fi
+              if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+                echo "Version bumps require a stable version without leading zeros: '$VERSION'" >&2
+                exit 1
+              fi
+              VERSION="$(python3 -c '
+          import sys
+          major, minor, patch = map(int, sys.argv[1].split("."))
+          bump = sys.argv[2]
+          if bump == "Major":
+              major, minor, patch = major + 1, 0, 0
+          elif bump == "Minor":
+              minor, patch = minor + 1, 0
+          else:
+              patch += 1
+          print(f"{major}.{minor}.{patch}")
+          ' "$VERSION" "$BUMP")"
+              if git show-ref --verify --quiet "refs/tags/v$VERSION"; then
+                echo "Release tag v$VERSION already exists; refusing to update the manifest" >&2
+                exit 1
+              fi
+              sed -i -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*(\")/\1$VERSION\2/" "$MANIFEST"
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add "$MANIFEST"
+              git -c commit.gpgsign=false commit -m "chore: bump version to $VERSION"
+              git push origin HEAD:refs/heads/master
+              ;;
+            *)
+              echo "Unknown version increment: '$BUMP'" >&2
+              exit 1
+              ;;
+          esac
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Package integration
         id: package
@@ -73,11 +129,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.manifest.outputs.tag }}
           FILENAME: ${{ steps.package.outputs.filename }}
+          RELEASE_SHA: ${{ steps.manifest.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
           gh release create "$TAG" "$FILENAME" \
-            --target "$GITHUB_SHA" \
+            --target "$RELEASE_SHA" \
             --title "$TAG" \
             --generate-notes
 

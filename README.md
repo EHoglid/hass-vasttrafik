@@ -16,6 +16,16 @@ minute.
 The Västtrafik name and logo are trademarks of Västtrafik and are used only to
 identify the service. They are not covered by this repository's MIT license.
 
+## Releasing
+
+In GitHub, open **Actions > Release > Run workflow**, select `master`, and
+choose **None**, **Patch**, **Minor**, or **Major**. A version bump updates and
+commits the integration manifest before creating the release. **None** uses
+the current manifest version and replaces the archive if its release already
+exists. Pushing a manifest change to `master` also runs the release workflow.
+Version bumps require a stable `major.minor.patch` version and permission for
+GitHub Actions to push to `master`.
+
 ## Install
 
 ### Home Assistant Marketplace (Former HACS)
