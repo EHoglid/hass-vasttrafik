@@ -16,18 +16,6 @@ minute.
 The Västtrafik name and logo are trademarks of Västtrafik and are used only to
 identify the service. They are not covered by this repository's MIT license.
 
-## Releasing
-
-In GitHub, open **Actions > Release > Run workflow**, select `master`, and
-choose **Patch**, **Minor**, or **Major**. The workflow bumps the latest
-`vX.Y.Z` tag, writes that version into `manifest.json` inside the release
-archive, and creates the tag and GitHub release.
-
-Git tags are the source of truth for the version. `manifest.json` in the
-repository intentionally keeps the placeholder version `0.0.0` and is never
-committed by the release workflow, so no extra credentials or branch
-protection bypass are needed.
-
 ## Install
 
 ### Home Assistant Marketplace (Former HACS)
@@ -189,3 +177,15 @@ Remove-Item Env:PYTEST_DISABLE_PLUGIN_AUTOLOAD
 ```
 
 GitHub Actions runs the full Home Assistant test setup on Ubuntu.
+
+## Releasing
+
+In GitHub, open **Actions > Release > Run workflow**, select `master`, and
+choose **Patch**, **Minor**, or **Major**. The workflow bumps the latest
+`vX.Y.Z` tag, writes that version into `manifest.json` inside the release
+archive, and creates the tag and GitHub release.
+
+Git tags are the source of truth for the version. `manifest.json` in the
+repository intentionally keeps the placeholder version `0.0.0` and is never
+committed by the release workflow, so no extra credentials or branch
+protection bypass are needed.
