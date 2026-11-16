@@ -1,19 +1,18 @@
 name: Release
 
+# The release version comes from git tags. manifest.json on master keeps the
+# placeholder version 0.0.0; the real version is written into manifest.json
+# only inside the release archive, so nothing is committed to master.
+
 on:
-  push:
-    branches: [master]
-    paths:
-      - custom_components/vasttrafik_timetable/manifest.json
   workflow_dispatch:
     inputs:
       bump:
         description: Version increment
         type: choice
         required: true
-        default: None
+        default: Patch
         options:
-          - None
           - Patch
           - Minor
           - Major
@@ -27,6 +26,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -34,71 +34,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Select and update manifest version
-        id: manifest
+      - name: Determine next version
+        id: version
         shell: bash
         env:
-          BUMP: ${{ inputs.bump || 'None' }}
+          BUMP: ${{ inputs.bump }}
         run: |
           set -euo pipefail
-          MANIFEST=custom_components/vasttrafik_timetable/manifest.json
-          VERSION="$(jq -r '.version // empty' "$MANIFEST")"
-          if [[ -z "$VERSION" ]]; then
-            echo "manifest.json does not contain a version" >&2
-            exit 1
-          fi
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
-            echo "manifest.json version '$VERSION' is not a valid SemVer version" >&2
-            exit 1
-          fi
-
+          LATEST="$(git tag -l 'v*' --sort=-v:refname \
+            | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
+            | head -n 1 || true)"
+          CURRENT="${LATEST#v}"
+          CURRENT="${CURRENT:-0.0.0}"
+          IFS=. read -r MAJOR MINOR PATCH <<< "$CURRENT"
           case "$BUMP" in
-            None) ;;
-            Patch|Minor|Major)
-              if [[ "$GITHUB_REF" != refs/heads/master ]]; then
-                echo "Version bumps must be run from master" >&2
-                exit 1
-              fi
-              if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-                echo "Version bumps require a stable version without leading zeros: '$VERSION'" >&2
-                exit 1
-              fi
-              VERSION="$(python3 -c '
-          import sys
-          major, minor, patch = map(int, sys.argv[1].split("."))
-          bump = sys.argv[2]
-          if bump == "Major":
-              major, minor, patch = major + 1, 0, 0
-          elif bump == "Minor":
-              minor, patch = minor + 1, 0
-          else:
-              patch += 1
-          print(f"{major}.{minor}.{patch}")
-          ' "$VERSION" "$BUMP")"
-              if git show-ref --verify --quiet "refs/tags/v$VERSION"; then
-                echo "Release tag v$VERSION already exists; refusing to update the manifest" >&2
-                exit 1
-              fi
-              sed -i -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*(\")/\1$VERSION\2/" "$MANIFEST"
-              git config user.name "github-actions[bot]"
-              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-              git add "$MANIFEST"
-              git -c commit.gpgsign=false commit -m "chore: bump version to $VERSION"
-              git push origin HEAD:refs/heads/master
-              ;;
-            *)
-              echo "Unknown version increment: '$BUMP'" >&2
-              exit 1
-              ;;
+            Major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            Minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            Patch) PATCH=$((PATCH + 1)) ;;
+            *) echo "Unknown version increment: '$BUMP'" >&2; exit 1 ;;
           esac
-
+          VERSION="$MAJOR.$MINOR.$PATCH"
+          if git show-ref --verify --quiet "refs/tags/v$VERSION"; then
+            echo "Release tag v$VERSION already exists" >&2
+            exit 1
+          fi
+          echo "Bumping ${LATEST:-<none>} -> v$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Package integration
         id: package
         shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
           FILENAME="$(jq -r '.filename // empty' hacs.json)"
@@ -106,43 +74,24 @@ jobs:
             echo "hacs.json must define a .zip filename" >&2
             exit 1
           fi
+          MANIFEST=custom_components/vasttrafik_timetable/manifest.json
+          jq --arg v "$VERSION" '.version = $v' "$MANIFEST" > "$RUNNER_TEMP/manifest.json"
+          mv "$RUNNER_TEMP/manifest.json" "$MANIFEST"
           (
             cd custom_components/vasttrafik_timetable
             zip -q -r "$GITHUB_WORKSPACE/$FILENAME" .
           )
           echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
 
-      - name: Check if release tag exists
-        id: tag
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git rev-parse "${{ steps.manifest.outputs.tag }}" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Create GitHub release
-        if: steps.tag.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.manifest.outputs.tag }}
+          TAG: ${{ steps.version.outputs.tag }}
           FILENAME: ${{ steps.package.outputs.filename }}
-          RELEASE_SHA: ${{ steps.manifest.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
           gh release create "$TAG" "$FILENAME" \
-            --target "$RELEASE_SHA" \
+            --target "$GITHUB_SHA" \
             --title "$TAG" \
             --generate-notes
-
-      - name: Upload archive to existing release
-        if: steps.tag.outputs.exists == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.manifest.outputs.tag }}
-          FILENAME: ${{ steps.package.outputs.filename }}
-        shell: bash
-        run: gh release upload "$TAG" "$FILENAME" --clobber

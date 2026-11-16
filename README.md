@@ -19,12 +19,14 @@ identify the service. They are not covered by this repository's MIT license.
 ## Releasing
 
 In GitHub, open **Actions > Release > Run workflow**, select `master`, and
-choose **None**, **Patch**, **Minor**, or **Major**. A version bump updates and
-commits the integration manifest before creating the release. **None** uses
-the current manifest version and replaces the archive if its release already
-exists. Pushing a manifest change to `master` also runs the release workflow.
-Version bumps require a stable `major.minor.patch` version and permission for
-GitHub Actions to push to `master`.
+choose **Patch**, **Minor**, or **Major**. The workflow bumps the latest
+`vX.Y.Z` tag, writes that version into `manifest.json` inside the release
+archive, and creates the tag and GitHub release.
+
+Git tags are the source of truth for the version. `manifest.json` in the
+repository intentionally keeps the placeholder version `0.0.0` and is never
+committed by the release workflow, so no extra credentials or branch
+protection bypass are needed.
 
 ## Install
 
